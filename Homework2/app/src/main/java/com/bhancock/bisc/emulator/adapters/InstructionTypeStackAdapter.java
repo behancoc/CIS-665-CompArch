@@ -2,16 +2,16 @@ package com.bhancock.bisc.emulator.adapters;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
-
 import com.bhancock.bisc.emulator.R;
+import com.bhancock.bisc.emulator.activities.OperandActivity;
 import com.loopeer.cardstack.CardStackView;
 import com.loopeer.cardstack.StackAdapter;
 
@@ -41,6 +41,9 @@ public class InstructionTypeStackAdapter extends StackAdapter<Integer> {
                     builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            Intent intent = new Intent(mContext,
+                                    OperandActivity.class);
+                            mContext.startActivity(intent);
 
                         }
                     });

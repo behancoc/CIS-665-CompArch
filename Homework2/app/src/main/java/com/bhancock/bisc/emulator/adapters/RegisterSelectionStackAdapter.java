@@ -2,6 +2,7 @@ package com.bhancock.bisc.emulator.adapters;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.util.Log;
 import android.view.View;
@@ -26,6 +27,7 @@ public class RegisterSelectionStackAdapter extends StackAdapter<Integer> {
     private List<Instruction> mInstructionList;
     private Context mContext;
     public HashMap<Integer, String> instructionMapping = new HashMap<>();
+    private int registerSelectionCount = 0;
 
 
     public RegisterSelectionStackAdapter(Context context) {
@@ -41,13 +43,16 @@ public class RegisterSelectionStackAdapter extends StackAdapter<Integer> {
             h.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
                     builder.setTitle("Confirm Selection");
                     builder.setMessage("Would you like to select this Register?");
                     builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-
+//                            registerSelectionCount ++;
+//                            AlertDialog.Builder builder1 = new AlertDialog.Builder(mContext);
+//                            builder1.setTitle("Register Selection");
+//                            builder.setMessage("Please Select another Register");
                         }
                     });
                     builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
