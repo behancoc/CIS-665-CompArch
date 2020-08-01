@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bhancock.bisc.emulator.R;
 import com.bhancock.bisc.emulator.adapters.CardStackAdapter;
+import com.bhancock.bisc.emulator.adapters.OperandStackAdapter;
 import com.loopeer.cardstack.CardStackView;
 
 import java.util.Arrays;
@@ -45,7 +46,7 @@ public class OperandActivity extends AppCompatActivity implements CardStackView.
 
     private CardStackView mOperandStackView;
     private LinearLayout mLinearLayout;
-    private CardStackAdapter mCardStackAdapter;
+    private OperandStackAdapter mOperandStackAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,14 +55,14 @@ public class OperandActivity extends AppCompatActivity implements CardStackView.
 
         mOperandStackView = findViewById(R.id.operand_stack_view);
         mOperandStackView.setItemExpendListener(this);
-        mCardStackAdapter = new CardStackAdapter(this);
-        mOperandStackView.setAdapter(mCardStackAdapter);
+        mOperandStackAdapter = new OperandStackAdapter(this);
+        mOperandStackView.setAdapter(mOperandStackAdapter);
 
         new Handler().postDelayed(
                 new Runnable() {
                     @Override
                     public void run() {
-                        mCardStackAdapter.updateData(Arrays.asList(TEST_DATAS));
+                        mOperandStackAdapter.updateData(Arrays.asList(TEST_DATAS));
                     }
                 }
                 , 200
