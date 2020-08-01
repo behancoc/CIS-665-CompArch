@@ -33,7 +33,7 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.Vi
 
         public ViewHolder(View view) {
             super(view);
-            instructionTextView = view.findViewById(R.id.instruction_name);
+            //instructionTextView = view.findViewById(R.id.instruction_name);
         }
     }
 
