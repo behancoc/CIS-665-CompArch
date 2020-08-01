@@ -8,12 +8,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.loopeer.cardstack.CardStackView;
 import com.loopeer.cardstack.StackAdapter;
 
-import java.io.ObjectInputStream;
 import java.util.HashMap;
 import java.util.List;
 
@@ -23,7 +20,6 @@ public class CardStackAdapter extends StackAdapter<Integer> {
 
     private List<Instruction> mInstructionList;
     private Context mContext;
-    //private RecyclerView mRecyclerView;
     public HashMap<Integer, String> instructionMapping = new HashMap<>();
 
 
@@ -73,15 +69,9 @@ public class CardStackAdapter extends StackAdapter<Integer> {
 
         public void onBind(Integer data, int position) {
             mLayout.getBackground().setColorFilter(ContextCompat.getColor(getContext(), data), PorterDuff.Mode.SRC_IN);
-//            mTextTitle.setText(String.valueOf(position));
-//            mTextTitle.setText("add");
             setInstructionMapping();
-
             Log.d(TAG, "Instruction mapping value from key " + instructionMapping.get(position));
-
             mTextTitle.setText(instructionMapping.get(position));
-
-
         }
 
         public void setInstructionMapping() {
