@@ -1,4 +1,4 @@
-package com.bhancock.bisc.emulator;
+package com.bhancock.bisc.emulator.adapters;
 
 import android.content.Context;
 import android.graphics.PorterDuff;
@@ -9,29 +9,31 @@ import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 
+import com.bhancock.bisc.emulator.models.Instruction;
+import com.bhancock.bisc.emulator.R;
 import com.loopeer.cardstack.CardStackView;
 import com.loopeer.cardstack.StackAdapter;
 
 import java.util.HashMap;
 import java.util.List;
 
-public class RegisterSelectionStackAdapter extends StackAdapter<Integer> {
+public class OperandStackAdapter extends StackAdapter<Integer> {
 
-    private static final String TAG = RegisterSelectionStackAdapter.class.getSimpleName();
+    private static final String TAG = OperandStackAdapter.class.getSimpleName();
 
     private List<Instruction> mInstructionList;
     private Context mContext;
     public HashMap<Integer, String> instructionMapping = new HashMap<>();
 
 
-    public RegisterSelectionStackAdapter(Context context) {
+    public OperandStackAdapter(Context context) {
         super(context);
     }
 
     @Override
     public void bindView(Integer data, int position, CardStackView.ViewHolder holder) {
-        if (holder instanceof ColorItemViewHolder) {
-            ColorItemViewHolder h = (ColorItemViewHolder) holder;
+        if (holder instanceof OperandItemViewHolder) {
+            OperandItemViewHolder h = (OperandItemViewHolder) holder;
             h.onBind(data, position);
         }
     }
@@ -40,7 +42,7 @@ public class RegisterSelectionStackAdapter extends StackAdapter<Integer> {
     protected CardStackView.ViewHolder onCreateView(ViewGroup parent, int viewType) {
         View view;
         view = getLayoutInflater().inflate(R.layout.list_item, parent, false);
-        return new ColorItemViewHolder(view);
+        return new OperandItemViewHolder(view);
     }
 
     @Override
@@ -48,14 +50,14 @@ public class RegisterSelectionStackAdapter extends StackAdapter<Integer> {
         return R.layout.list_item;
     }
 
-    private static class ColorItemViewHolder extends CardStackView.ViewHolder {
+    private static class OperandItemViewHolder extends CardStackView.ViewHolder {
         View mLayout;
         View mContainerContent;
         TextView mTextTitle;
         private HashMap<Integer, String> instructionMapping = new HashMap<>();
 
 
-        public ColorItemViewHolder(View view) {
+        public OperandItemViewHolder(View view) {
             super(view);
             mLayout = view.findViewById(R.id.frame_list_card_item);
             mContainerContent = view.findViewById(R.id.container_list_content);
@@ -76,14 +78,34 @@ public class RegisterSelectionStackAdapter extends StackAdapter<Integer> {
         }
 
         public void setInstructionMapping() {
-            instructionMapping.put(0, "R0");
-            instructionMapping.put(1, "R1");
-            instructionMapping.put(2, "R2");
-            instructionMapping.put(3, "R3");
-            instructionMapping.put(4, "R4");
-            instructionMapping.put(5, "R5");
-            instructionMapping.put(6, "R6");
-            instructionMapping.put(7, "R7");
+            instructionMapping.put(0, "add");
+            instructionMapping.put(1, "addc");
+            instructionMapping.put(2, "addw");
+            instructionMapping.put(3, "sub");
+            instructionMapping.put(4, "subc");
+            instructionMapping.put(5, "subw");
+            instructionMapping.put(6, "logl");
+            instructionMapping.put(7, "logr");
+            instructionMapping.put(8, "asr");
+            instructionMapping.put(9, "cmp");
+            instructionMapping.put(10, "cmpn");
+            instructionMapping.put(11, "and");
+            instructionMapping.put(12, "eor");
+            instructionMapping.put(13, "or");
+            instructionMapping.put(14, "nor");
+            instructionMapping.put(15, "nand");
+            instructionMapping.put(16, "sb");
+            instructionMapping.put(17, "sw");
+            instructionMapping.put(18, "lb");
+            instructionMapping.put(19, "lw");
+            instructionMapping.put(20, "jal");
+            instructionMapping.put(21, "mult");
+            instructionMapping.put(22, "div");
+            instructionMapping.put(23, "beq");
+            instructionMapping.put(24, "bne");
+            instructionMapping.put(25, "flsh");
+
         }
+
     }
 }

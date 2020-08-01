@@ -1,4 +1,4 @@
-package com.bhancock.bisc.emulator;
+package com.bhancock.bisc.emulator.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.widget.LinearLayout;
 
+import com.bhancock.bisc.emulator.R;
+import com.bhancock.bisc.emulator.adapters.RegisterSelectionStackAdapter;
 import com.loopeer.cardstack.CardStackView;
 
 import java.util.Arrays;

@@ -1,4 +1,4 @@
-package com.bhancock.bisc.emulator;
+package com.bhancock.bisc.emulator.models;
 
 public class Instruction {
 

@@ -3,6 +3,8 @@ package com.bhancock.bisc.emulator;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
+
+import com.bhancock.bisc.emulator.activities.InstructionTypeActivity;
 import com.loopeer.cardstack.CardStackView;
 
 

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".InstructionTypeActivity">
+    tools:context=".activities.InstructionTypeActivity">
 
     <com.loopeer.cardstack.CardStackView
         android:id="@+id/instruction_type_stack_view"

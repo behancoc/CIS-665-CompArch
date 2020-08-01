@@ -1,4 +1,4 @@
-package com.bhancock.bisc.emulator;
+package com.bhancock.bisc.emulator.adapters;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -10,6 +10,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bhancock.bisc.emulator.models.Instruction;
+import com.bhancock.bisc.emulator.R;
 
 import java.util.List;
 

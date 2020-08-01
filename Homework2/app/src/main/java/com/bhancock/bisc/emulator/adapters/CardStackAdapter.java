@@ -1,4 +1,4 @@
-package com.bhancock.bisc.emulator;
+package com.bhancock.bisc.emulator.adapters;
 
 import android.content.Context;
 import android.graphics.PorterDuff;
@@ -8,6 +8,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
+
+import com.bhancock.bisc.emulator.models.Instruction;
+import com.bhancock.bisc.emulator.R;
 import com.loopeer.cardstack.CardStackView;
 import com.loopeer.cardstack.StackAdapter;
 

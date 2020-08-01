@@ -9,9 +9,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".OperandActivity"></activity>
-        <activity android:name=".RegisterSelectionActivity" />
-        <activity android:name=".InstructionTypeActivity" />
+        <activity android:name=".activities.OperandActivity"></activity>
+        <activity android:name=".activities.RegisterSelectionActivity" />
+        <activity android:name=".activities.InstructionTypeActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
