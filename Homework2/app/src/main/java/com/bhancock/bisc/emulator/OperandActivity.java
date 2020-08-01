@@ -50,7 +50,7 @@ public class OperandActivity extends AppCompatActivity implements CardStackView.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_operand);
 
-        mOperandStackView = findViewById(R.id.stackview_main);
+        mOperandStackView = findViewById(R.id.operand_stack_view);
         mOperandStackView.setItemExpendListener(this);
         mCardStackAdapter = new CardStackAdapter(this);
         mOperandStackView.setAdapter(mCardStackAdapter);
