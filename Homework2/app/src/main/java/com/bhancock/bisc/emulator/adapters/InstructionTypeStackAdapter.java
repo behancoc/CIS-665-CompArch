@@ -1,12 +1,14 @@
 package com.bhancock.bisc.emulator.adapters;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.PorterDuff;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 
 import com.bhancock.bisc.emulator.R;
@@ -18,9 +20,11 @@ import java.util.HashMap;
 public class InstructionTypeStackAdapter extends StackAdapter<Integer> {
 
     private static final String TAG = InstructionTypeStackAdapter.class.getSimpleName();
+    private Context mContext;
 
     public InstructionTypeStackAdapter(Context context) {
         super(context);
+        mContext = context;
     }
 
     @Override
@@ -28,6 +32,28 @@ public class InstructionTypeStackAdapter extends StackAdapter<Integer> {
         if (holder instanceof InstructionTypeStackAdapter.InstructionTypeItemViewHolder) {
             InstructionTypeStackAdapter.InstructionTypeItemViewHolder h = (InstructionTypeStackAdapter.InstructionTypeItemViewHolder) holder;
             h.onBind(data, position);
+            h.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                    builder.setTitle("Confirm Selection");
+                    builder.setMessage("Would you like to select this Instruction?");
+                    builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                    builder.create().show();
+                    return true;
+                }
+            });
         }
     }
 
