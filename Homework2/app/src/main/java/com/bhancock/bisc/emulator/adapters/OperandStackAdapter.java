@@ -99,40 +99,50 @@ public class OperandStackAdapter extends StackAdapter<Integer> {
 
         public void onBind(Integer data, int position) {
             mLayout.getBackground().setColorFilter(ContextCompat.getColor(getContext(), data), PorterDuff.Mode.SRC_IN);
-            setInstructionMapping();
+            setUserInterfaceOperandMapping();
             Log.d(TAG, "Instruction mapping value from key " + instructionMapping.get(position));
             mTextTitle.setText(instructionMapping.get(position));
         }
 
-        public void setInstructionMapping() {
-            instructionMapping.put(0, "add");
-            instructionMapping.put(1, "addc");
-            instructionMapping.put(2, "addw");
-            instructionMapping.put(3, "sub");
-            instructionMapping.put(4, "subc");
-            instructionMapping.put(5, "subw");
-            instructionMapping.put(6, "logl");
-            instructionMapping.put(7, "logr");
-            instructionMapping.put(8, "asr");
-            instructionMapping.put(9, "cmp");
-            instructionMapping.put(10, "cmpn");
-            instructionMapping.put(11, "and");
-            instructionMapping.put(12, "eor");
-            instructionMapping.put(13, "or");
-            instructionMapping.put(14, "nor");
-            instructionMapping.put(15, "nand");
-            instructionMapping.put(16, "sb");
-            instructionMapping.put(17, "sw");
-            instructionMapping.put(18, "lb");
-            instructionMapping.put(19, "lw");
-            instructionMapping.put(20, "jal");
-            instructionMapping.put(21, "mult");
-            instructionMapping.put(22, "div");
-            instructionMapping.put(23, "beq");
-            instructionMapping.put(24, "bne");
-            instructionMapping.put(25, "flsh");
+        public void setUserInterfaceOperandMapping() {
+            Instruction addInstruction = new Instruction("add");
+            Instruction addiInstruction = new Instruction("addi");
+            Instruction nandInstruction = new Instruction("nand");
+            Instruction luiInstruction = new Instruction("lui");
+            Instruction swInstruction = new Instruction("sw");
+            Instruction lwInstruction = new Instruction("lw");
+            Instruction beqInstruction = new Instruction("beq");
+            Instruction jalrInstruction = new Instruction("jalr");
 
+
+            instructionMapping.put(0, addInstruction.getInstructionName());
+            instructionMapping.put(1, addiInstruction.getInstructionName());
+            instructionMapping.put(2, nandInstruction.getInstructionName());
+            instructionMapping.put(3, luiInstruction.getInstructionName());
+            instructionMapping.put(4, swInstruction.getInstructionName());
+            instructionMapping.put(5, lwInstruction.getInstructionName());
+            instructionMapping.put(6, beqInstruction.getInstructionName());
+            instructionMapping.put(7, jalrInstruction.getInstructionName());
+
+//            instructionMapping.put(7, "logr");
+//            instructionMapping.put(8, "asr");
+//            instructionMapping.put(9, "cmp");
+//            instructionMapping.put(10, "cmpn");
+//            instructionMapping.put(11, "and");
+//            instructionMapping.put(12, "eor");
+//            instructionMapping.put(13, "or");
+//            instructionMapping.put(14, "nor");
+//            instructionMapping.put(15, "nand");
+//            instructionMapping.put(16, "sb");
+//            instructionMapping.put(17, "sw");
+//            instructionMapping.put(18, "lb");
+//            instructionMapping.put(19, "lw");
+//            instructionMapping.put(20, "jal");
+//            instructionMapping.put(21, "mult");
+//            instructionMapping.put(22, "div");
+//            instructionMapping.put(23, "beq");
+//            instructionMapping.put(24, "bne");
+//            instructionMapping.put(25, "flsh");
         }
-
     }
 }

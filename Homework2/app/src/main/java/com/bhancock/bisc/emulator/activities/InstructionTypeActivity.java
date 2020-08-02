@@ -2,17 +2,25 @@ package com.bhancock.bisc.emulator.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
+import android.view.View;
 import android.widget.LinearLayout;
 
-import com.bhancock.bisc.emulator.adapters.InstructionTypeStackAdapter;
+import com.bhancock.bisc.emulator.adapters.InstructionFormatStackAdapter;
 import com.bhancock.bisc.emulator.R;
 import com.loopeer.cardstack.CardStackView;
 
 import java.util.Arrays;
 
-public class InstructionTypeActivity extends AppCompatActivity implements CardStackView.ItemExpendListener {
+public class InstructionTypeActivity extends AppCompatActivity implements
+        CardStackView.ItemExpendListener {
+
+    private final String TAG = InstructionTypeActivity.class.getSimpleName();
+
 
     public static Integer[] TEST_DATAS = new Integer[]{
             R.color.color_1,
@@ -22,7 +30,9 @@ public class InstructionTypeActivity extends AppCompatActivity implements CardSt
 
     private CardStackView mInstructionTypeStackView;
     private LinearLayout mLinearLayout;
-    private InstructionTypeStackAdapter mInstructionStackAdapter;
+    private InstructionFormatStackAdapter mInstructionStackAdapter;
+
+
 
 
     @Override
@@ -32,8 +42,10 @@ public class InstructionTypeActivity extends AppCompatActivity implements CardSt
 
         mInstructionTypeStackView = findViewById(R.id.instruction_type_stack_view);
         mInstructionTypeStackView.setItemExpendListener(this);
-        mInstructionStackAdapter = new InstructionTypeStackAdapter(this);
+        mInstructionStackAdapter = new InstructionFormatStackAdapter(this);
         mInstructionTypeStackView.setAdapter(mInstructionStackAdapter);
+
+
 
         new Handler().postDelayed(
                 new Runnable() {
@@ -51,6 +63,7 @@ public class InstructionTypeActivity extends AppCompatActivity implements CardSt
 
     @Override
     public void onItemExpend(boolean expend) {
-
+        Log.d(TAG, "OnItemExpend");
     }
+
 }

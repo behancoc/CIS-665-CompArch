@@ -2,7 +2,6 @@ package com.bhancock.bisc.emulator.adapters;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.util.Log;
 import android.view.View;
@@ -14,9 +13,11 @@ import androidx.core.content.ContextCompat;
 
 import com.bhancock.bisc.emulator.models.Instruction;
 import com.bhancock.bisc.emulator.R;
+import com.bhancock.bisc.emulator.models.Register;
 import com.loopeer.cardstack.CardStackView;
 import com.loopeer.cardstack.StackAdapter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -28,6 +29,7 @@ public class RegisterSelectionStackAdapter extends StackAdapter<Integer> {
     private Context mContext;
     public HashMap<Integer, String> instructionMapping = new HashMap<>();
     private int registerSelectionCount = 0;
+    private ArrayList<Register> registers;
 
 
     public RegisterSelectionStackAdapter(Context context) {
@@ -35,10 +37,16 @@ public class RegisterSelectionStackAdapter extends StackAdapter<Integer> {
         mContext = context;
     }
 
+    public RegisterSelectionStackAdapter(Context context, ArrayList<Register> registers) {
+        super(context);
+        this.mContext = context;
+        this.registers = registers;
+    }
+
     @Override
     public void bindView(Integer data, int position, CardStackView.ViewHolder holder) {
-        if (holder instanceof ColorItemViewHolder) {
-            ColorItemViewHolder h = (ColorItemViewHolder) holder;
+        if (holder instanceof RegistersItemViewHolder) {
+            RegistersItemViewHolder h = (RegistersItemViewHolder) holder;
             h.onBind(data, position);
             h.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
@@ -49,10 +57,7 @@ public class RegisterSelectionStackAdapter extends StackAdapter<Integer> {
                     builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-//                            registerSelectionCount ++;
-//                            AlertDialog.Builder builder1 = new AlertDialog.Builder(mContext);
-//                            builder1.setTitle("Register Selection");
-//                            builder.setMessage("Please Select another Register");
+
                         }
                     });
                     builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -72,7 +77,7 @@ public class RegisterSelectionStackAdapter extends StackAdapter<Integer> {
     protected CardStackView.ViewHolder onCreateView(ViewGroup parent, int viewType) {
         View view;
         view = getLayoutInflater().inflate(R.layout.list_item, parent, false);
-        return new ColorItemViewHolder(view);
+        return new RegistersItemViewHolder(view);
     }
 
     @Override
@@ -80,14 +85,14 @@ public class RegisterSelectionStackAdapter extends StackAdapter<Integer> {
         return R.layout.list_item;
     }
 
-    private static class ColorItemViewHolder extends CardStackView.ViewHolder {
+    private static class RegistersItemViewHolder extends CardStackView.ViewHolder {
         View mLayout;
         View mContainerContent;
         TextView mTextTitle;
         private HashMap<Integer, String> instructionMapping = new HashMap<>();
 
 
-        public ColorItemViewHolder(View view) {
+        public RegistersItemViewHolder(View view) {
             super(view);
             mLayout = view.findViewById(R.id.frame_list_card_item);
             mContainerContent = view.findViewById(R.id.container_list_content);
@@ -102,12 +107,12 @@ public class RegisterSelectionStackAdapter extends StackAdapter<Integer> {
 
         public void onBind(Integer data, int position) {
             mLayout.getBackground().setColorFilter(ContextCompat.getColor(getContext(), data), PorterDuff.Mode.SRC_IN);
-            setInstructionMapping();
+            setUserInterfaceRegisterMapping();
             Log.d(TAG, "Instruction mapping value from key " + instructionMapping.get(position));
             mTextTitle.setText(instructionMapping.get(position));
         }
 
-        public void setInstructionMapping() {
+        public void setUserInterfaceRegisterMapping() {
             instructionMapping.put(0, "R0");
             instructionMapping.put(1, "R1");
             instructionMapping.put(2, "R2");

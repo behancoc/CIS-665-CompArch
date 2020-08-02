@@ -3,11 +3,14 @@ package com.bhancock.bisc.emulator.adapters;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import com.bhancock.bisc.emulator.R;
@@ -18,34 +21,43 @@ import com.loopeer.cardstack.StackAdapter;
 
 import java.util.HashMap;
 
-public class InstructionTypeStackAdapter extends StackAdapter<Integer> {
+import static android.content.Context.MODE_PRIVATE;
 
-    private static final String TAG = InstructionTypeStackAdapter.class.getSimpleName();
+public class InstructionFormatStackAdapter extends StackAdapter<Integer> {
+
+    private static final String TAG = InstructionFormatStackAdapter.class.getSimpleName();
     private Context mContext;
 
-    public InstructionTypeStackAdapter(Context context) {
+    public InstructionFormatStackAdapter(Context context) {
         super(context);
         mContext = context;
     }
 
     @Override
-    public void bindView(Integer data, int position, CardStackView.ViewHolder holder) {
-        if (holder instanceof InstructionTypeStackAdapter.InstructionTypeItemViewHolder) {
-            InstructionTypeStackAdapter.InstructionTypeItemViewHolder h = (InstructionTypeStackAdapter.InstructionTypeItemViewHolder) holder;
+    public void bindView(final Integer data, final int position, CardStackView.ViewHolder holder) {
+        if (holder instanceof InstructionFormatStackAdapter.InstructionTypeItemViewHolder) {
+            InstructionFormatStackAdapter.InstructionTypeItemViewHolder h = (InstructionFormatStackAdapter.InstructionTypeItemViewHolder) holder;
             h.onBind(data, position);
             h.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
-                public boolean onLongClick(View v) {
+                public boolean onLongClick(final View v) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
                     builder.setTitle("Confirm Selection");
                     builder.setMessage("Would you like to select this Instruction?");
                     builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            Intent intent = new Intent(mContext,
-                                    OperandActivity.class);
-                            mContext.startActivity(intent);
 
+                            Log.d(TAG, "Possible data? " + position);
+
+                            SharedPreferences sharedPreferences = mContext.getSharedPreferences("UserSelections", MODE_PRIVATE);
+                            SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
+                            sharedPreferencesEditor.putInt("InstructionFormat", data);
+                            sharedPreferencesEditor.commit();
+                            Toast.makeText(v.getContext(), "Successful write to Shared Preferences", Toast.LENGTH_LONG).show();
+
+                            Intent intent = new Intent(mContext, OperandActivity.class);
+                            mContext.startActivity(intent);
                         }
                     });
                     builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -66,7 +78,7 @@ public class InstructionTypeStackAdapter extends StackAdapter<Integer> {
     protected CardStackView.ViewHolder onCreateView(ViewGroup parent, int viewType) {
         View view;
         view = getLayoutInflater().inflate(R.layout.list_item, parent, false);
-        return new InstructionTypeStackAdapter.InstructionTypeItemViewHolder(view);
+        return new InstructionFormatStackAdapter.InstructionTypeItemViewHolder(view);
     }
 
     @Override
@@ -78,7 +90,7 @@ public class InstructionTypeStackAdapter extends StackAdapter<Integer> {
         View mLayout;
         View mContainerContent;
         TextView mTextTitle;
-        private HashMap<Integer, String> instructionMapping = new HashMap<>();
+        private HashMap<Integer, String> instructionFormatMapping = new HashMap<>();
 
         public InstructionTypeItemViewHolder(View view) {
             super(view);
@@ -95,14 +107,11 @@ public class InstructionTypeStackAdapter extends StackAdapter<Integer> {
 
         public void onBind(Integer data, int position) {
             mLayout.getBackground().setColorFilter(ContextCompat.getColor(getContext(), data), PorterDuff.Mode.SRC_IN);
-            setInstructionMapping();
-            Log.d(TAG, "Instruction mapping value from key " + instructionMapping.get(position));
-            mTextTitle.setText(instructionMapping.get(position));
-
-
+            setUserInterfaceInstructionFormatMapping();
+            mTextTitle.setText(instructionFormatMapping.get(position));
         }
 
-        public void setInstructionMapping() {
+        public void setUserInterfaceInstructionFormatMapping() {
             InstructionFormat formatTypeRRR = new InstructionFormat();
             InstructionFormat formatTypeRRI = new InstructionFormat();
             InstructionFormat formatTypeRI = new InstructionFormat();
@@ -111,9 +120,9 @@ public class InstructionTypeStackAdapter extends StackAdapter<Integer> {
             formatTypeRRI.setInstructionFormatName("RRI-type");
             formatTypeRI.setInstructionFormatName("RI-type");
 
-            instructionMapping.put(0, formatTypeRRR.getInstructionFormatName());
-            instructionMapping.put(1, formatTypeRRI.getInstructionFormatName());
-            instructionMapping.put(2, formatTypeRI.getInstructionFormatName());
+            instructionFormatMapping.put(0, formatTypeRRR.getInstructionFormatName());
+            instructionFormatMapping.put(1, formatTypeRRI.getInstructionFormatName());
+            instructionFormatMapping.put(2, formatTypeRI.getInstructionFormatName());
         }
     }
 }
