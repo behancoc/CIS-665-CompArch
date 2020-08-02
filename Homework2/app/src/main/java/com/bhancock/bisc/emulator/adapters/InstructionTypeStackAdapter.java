@@ -12,6 +12,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import com.bhancock.bisc.emulator.R;
 import com.bhancock.bisc.emulator.activities.OperandActivity;
+import com.bhancock.bisc.emulator.models.InstructionFormat;
 import com.loopeer.cardstack.CardStackView;
 import com.loopeer.cardstack.StackAdapter;
 
@@ -102,9 +103,17 @@ public class InstructionTypeStackAdapter extends StackAdapter<Integer> {
         }
 
         public void setInstructionMapping() {
-            instructionMapping.put(0, "i-type");
-            instructionMapping.put(1, "r-type");
-            instructionMapping.put(2, "j-type");
+            InstructionFormat formatTypeRRR = new InstructionFormat();
+            InstructionFormat formatTypeRRI = new InstructionFormat();
+            InstructionFormat formatTypeRI = new InstructionFormat();
+
+            formatTypeRRR.setInstructionFormatName("RRR-type");
+            formatTypeRRI.setInstructionFormatName("RRI-type");
+            formatTypeRI.setInstructionFormatName("RI-type");
+
+            instructionMapping.put(0, formatTypeRRR.getInstructionFormatName());
+            instructionMapping.put(1, formatTypeRRI.getInstructionFormatName());
+            instructionMapping.put(2, formatTypeRI.getInstructionFormatName());
         }
     }
 }
