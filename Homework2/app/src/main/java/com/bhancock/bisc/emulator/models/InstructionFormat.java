@@ -7,12 +7,17 @@ public class InstructionFormat {
      * modify to my own Instruction-Set Arch eventually
      */
 
+    private String instructionFormatName;
     private String opcode;
     private Register registerA;
     private Register registerB;
     private Register registerC;
     private int immediate; //Type of this needs to be changed
     private int signedImmediate; //Type of this needs to be changed
+
+    public InstructionFormat() {
+
+    }
 
     //Empty constructor
     public InstructionFormat(String opcode) {
@@ -44,6 +49,10 @@ public class InstructionFormat {
         this.immediate = immediate;
     }
 
+    public String getInstructionFormatName() {
+        return instructionFormatName;
+    }
+
     public String getOpcode() {
         return opcode;
     }
@@ -66,6 +75,12 @@ public class InstructionFormat {
 
     public int getSignedImmediate() {
         return signedImmediate;
+    }
+
+    //Setters for class
+
+    public void setInstructionFormatName(String instructionFormatName) {
+        this.instructionFormatName = instructionFormatName;
     }
 
     public void setOpcode(String opcode) {
