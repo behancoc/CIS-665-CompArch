@@ -44,5 +44,51 @@ public class InstructionFormat {
         this.immediate = immediate;
     }
 
+    public String getOpcode() {
+        return opcode;
+    }
 
+    public Register getRegisterA() {
+        return registerA;
+    }
+
+    public Register getRegisterB() {
+        return registerB;
+    }
+
+    public Register getRegisterC() {
+        return registerC;
+    }
+
+    public int getImmediate() {
+        return immediate;
+    }
+
+    public int getSignedImmediate() {
+        return signedImmediate;
+    }
+
+    public void setOpcode(String opcode) {
+        this.opcode = opcode;
+    }
+
+    public void setRegisterA(Register registerA) {
+        this.registerA = registerA;
+    }
+
+    public void setRegisterB(Register registerB) {
+        this.registerB = registerB;
+    }
+
+    public void setRegisterC(Register registerC) {
+        this.registerC = registerC;
+    }
+
+    public void setImmediate(int immediate) {
+        this.immediate = immediate;
+    }
+
+    public void setSignedImmediate(int signedImmediate) {
+        this.signedImmediate = signedImmediate;
+    }
 }
