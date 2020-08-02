@@ -1,19 +1,19 @@
 package com.bhancock.bisc.emulator.models;
 
+import java.util.HashMap;
+
 public class Instruction {
 
-    public String instructionName;
+    private String instructionName;
+    private HashMap<String, Byte> instructionMapping = new HashMap<>();
 
     public Instruction() {
-
+        generateInstructionMapping();
     }
 
     public Instruction(String name) {
-        instructionName = name;
-    }
-
-    public boolean isValid() {
-        return true;
+        generateInstructionMapping();
+        this.setInstructionName(name);
     }
 
     public String getInstructionName() {
@@ -23,4 +23,17 @@ public class Instruction {
     public void setInstructionName(String instructionName) {
         this.instructionName = instructionName;
     }
+
+    public void generateInstructionMapping() {
+        instructionMapping.put("add", (byte) 0);
+        instructionMapping.put("addi", (byte) 1);
+        instructionMapping.put("nand", (byte) 2);
+        instructionMapping.put("lui", (byte) 3);
+        instructionMapping.put("sw", (byte) 4);
+        instructionMapping.put("lw", (byte) 5);
+        instructionMapping.put("beq", (byte) 6);
+        instructionMapping.put("jalr", (byte) 7);
+    }
+
+
 }
