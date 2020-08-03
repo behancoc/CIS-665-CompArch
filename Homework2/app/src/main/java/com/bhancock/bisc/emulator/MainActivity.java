@@ -26,10 +26,6 @@ public class MainActivity extends AppCompatActivity implements CardStackView.Ite
 
     private InstructionViewModel instructionViewModel;
 
-
-//    SharedPreferences sharedPreferences;
-//    SharedPreferences.Editor editor;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,14 +50,6 @@ public class MainActivity extends AppCompatActivity implements CardStackView.Ite
             }
         });
 
-
-//        sharedPreferences = getSharedPreferences("UserSelections", Context.MODE_PRIVATE);
-//        editor = sharedPreferences.edit();
-//        editor.putInt("Hello", 12);
-//        editor.putInt("World", 14);
-//        editor.apply();
-//
-//        String test = sharedPreferences.getString("InstructionFun", "");
 
 //        Intent intent = new Intent(MainActivity.this, InstructionTypeActivity.class);
 //        startActivity(intent);
