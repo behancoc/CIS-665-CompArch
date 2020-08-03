@@ -15,6 +15,8 @@ import com.bhancock.bisc.emulator.models.Instruction;
 import com.bhancock.bisc.emulator.viewmodels.InstructionViewModel;
 import com.bhancock.bisc.emulator.R;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class ResultActivity extends AppCompatActivity {
@@ -23,7 +25,7 @@ public class ResultActivity extends AppCompatActivity {
 
     private InstructionViewModel instructionViewModel;
     private LiveData<List<Instruction>> instructionList;
-
+    private HashMap<String, ArrayList<Object> > instructionMapping = new HashMap<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,7 +33,7 @@ public class ResultActivity extends AppCompatActivity {
 
         instructionViewModel = ViewModelProviders.of(this).get(InstructionViewModel.class);
 
-
+        createMapping();
         readInstruction();
     }
 
@@ -52,6 +54,8 @@ public class ResultActivity extends AppCompatActivity {
                     Log.d(TAG, "Happy Dance!");
 
                     Log.d(TAG, "Grabbing some formats!: " +instructions.get(0).getInstructionFormat());
+                    //instructions.get(1).getDestinationRegister()
+
 
                 } else {
                     Log.d(TAG, "List is null");
@@ -59,4 +63,65 @@ public class ResultActivity extends AppCompatActivity {
             }
         });
     }
+
+
+    private void computeInstructionResult(String opcode) {
+    }
+
+    private void createMapping() {
+
+
+
+        ArrayList<Object> addInstructionAssemblyFormat = new ArrayList<>();
+        addInstructionAssemblyFormat.add(0, "rA");
+        addInstructionAssemblyFormat.add(1, "rB");
+        addInstructionAssemblyFormat.add(2, "rC");
+
+
+        ArrayList<Object> addiInstructionAssemblyFormat = new ArrayList<>();
+        addiInstructionAssemblyFormat.add(0, "rA");
+        addiInstructionAssemblyFormat.add(1, "rB");
+        addiInstructionAssemblyFormat.add(2, "imm");
+
+
+        ArrayList<Object> nandInstructionAssemblyFormat = new ArrayList<>();
+        nandInstructionAssemblyFormat.add(0, "rA");
+        nandInstructionAssemblyFormat.add(1, "rB");
+        nandInstructionAssemblyFormat.add(2, "rC");
+
+        ArrayList<Object> luiInstructionAssemblyFormat = new ArrayList<>();
+        nandInstructionAssemblyFormat.add(0, "rA");
+        nandInstructionAssemblyFormat.add(1, "imm");
+
+        ArrayList<Object> swInstructionAssemblyFormat = new ArrayList<>();
+        nandInstructionAssemblyFormat.add(0, "rA");
+        nandInstructionAssemblyFormat.add(1, "rB");
+        nandInstructionAssemblyFormat.add(2, "imm");
+
+        ArrayList<Object> lwInstructionAssemblyFormat = new ArrayList<>();
+        nandInstructionAssemblyFormat.add(0, "rA");
+        nandInstructionAssemblyFormat.add(1, "rB");
+        nandInstructionAssemblyFormat.add(2, "imm");
+
+        ArrayList<Object> beqInstructionAssemblyFormat = new ArrayList<>();
+        nandInstructionAssemblyFormat.add(0, "rA");
+        nandInstructionAssemblyFormat.add(1, "rB");
+        nandInstructionAssemblyFormat.add(2, "imm");
+
+        ArrayList<Object> jalrInstructionAssemblyFormat = new ArrayList<>();
+        nandInstructionAssemblyFormat.add(0, "rA");
+        nandInstructionAssemblyFormat.add(1, "rB");
+
+
+
+
+
+        instructionMapping.put("add", addInstructionAssemblyFormat);
+        instructionMapping.put("addi", addiInstructionAssemblyFormat);
+
+        Log.d(TAG, "Hey " + instructionMapping.get("addi"));
+
+    }
+
+
 }
