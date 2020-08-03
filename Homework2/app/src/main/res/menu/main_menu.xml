@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/delete_all_instuctions"
-        android:title="Delete all instructions"
+        android:id="@+id/delete_all_instructions"
+        android:title="Delete All Instructions Listed"
         app:showAsAction="never"/>
 </menu>

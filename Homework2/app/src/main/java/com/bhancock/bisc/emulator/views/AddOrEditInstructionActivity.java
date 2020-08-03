@@ -23,9 +23,9 @@ public class AddOrEditInstructionActivity extends AppCompatActivity {
 
     public static final String TAG = AddOrEditInstructionActivity.class.getSimpleName();
     public static final String EXTRA_ID = "com.bhancock.bisc.emulator.EXTRA_ID";
-    public static final String EXTRA_TITLE = "com.bhancock.bisc.emulator.EXTRA_TITLE";
-    public static final String EXTRA_DESCRIPTION = "com.bhancock.bisc.emulator.EXTRA_DESCRIPTION";
-    public static final String EXTRA_PRIORITY = "com.bhancock.bisc.emulator.EXTRA_PRIORITY";
+    public static final String EXTRA_INSTRUCTION_FORMAT = "com.bhancock.bisc.emulator.EXTRA_TITLE";
+    public static final String EXTRA_OPCODE = "com.bhancock.bisc.emulator.EXTRA_DESCRIPTION";
+    public static final String EXTRA_INSTRUCTION_NUMBER = "com.bhancock.bisc.emulator.EXTRA_PRIORITY";
 
     private TextView instructionFormatTextView;
     private RadioGroup radioGroup;
@@ -59,9 +59,10 @@ public class AddOrEditInstructionActivity extends AppCompatActivity {
 
         if(intent.hasExtra(EXTRA_ID)) {
             setTitle("Edit Instruction");
-            instructionFormatTextView.setText(intent.getStringExtra(EXTRA_TITLE));
-            opCodePicker.setValue(Integer.parseInt(intent.getStringExtra(EXTRA_DESCRIPTION)));
-            numberPicker.setValue(intent.getIntExtra(EXTRA_PRIORITY, 1));
+            instructionFormatTextView.setText(intent.getStringExtra(EXTRA_INSTRUCTION_FORMAT));
+            opCodePicker.setValue(Integer.parseInt(intent.getStringExtra(EXTRA_OPCODE)));
+            numberPicker.setValue(intent.getIntExtra(EXTRA_INSTRUCTION_NUMBER, 1));
+
         } else {
             setTitle("Add Instruction");
         }
@@ -93,23 +94,24 @@ public class AddOrEditInstructionActivity extends AppCompatActivity {
     }
 
     private void saveInstruction() {
-        String title = instructionFormatTextView.getText().toString();
-        String description = String.valueOf(opCodePicker.getValue());
+        String instructionFormat = instructionFormatTextView.getText().toString();
+        String opCode = String.valueOf(opCodePicker.getValue());
 
-        Log.d(TAG, "Description: " + description);
-        int priority = numberPicker.getValue();
+        Log.d(TAG, "Description: " + opCode);
+        int instructionNumber = numberPicker.getValue();
 
-        if (title.trim().isEmpty()) {
+        if (instructionFormat.trim().isEmpty()) {
             Toast.makeText(this, "Do something", Toast.LENGTH_SHORT).show();
             return;
         }
 
         Intent data = new Intent();
-        data.putExtra(EXTRA_TITLE, title);
-        data.putExtra(EXTRA_DESCRIPTION, description);
-        data.putExtra(EXTRA_PRIORITY, priority);
+        data.putExtra(EXTRA_INSTRUCTION_FORMAT, instructionFormat);
+        data.putExtra(EXTRA_OPCODE, opCode);
+        data.putExtra(EXTRA_INSTRUCTION_NUMBER, instructionNumber);
 
         int id = getIntent().getIntExtra(EXTRA_ID, -1);
+
         if (id != -1) {
             data.putExtra(EXTRA_ID, id);
         }

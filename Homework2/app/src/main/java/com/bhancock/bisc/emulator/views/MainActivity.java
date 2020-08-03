@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -29,7 +30,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     public static final int ADD_INSTRUCTION_REQUEST = 1;
-    public static final int EDIT_INSTRUCTION_REQUEST = 1;
+    public static final int EDIT_INSTRUCTION_REQUEST = 2;
 
     private InstructionViewModel instructionViewModel;
 
@@ -90,8 +91,9 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(Instruction instruction) {
                 Intent intent = new Intent(MainActivity.this, AddOrEditInstructionActivity.class);
                 intent.putExtra(AddOrEditInstructionActivity.EXTRA_ID, instruction.getId());
-                intent.putExtra(AddOrEditInstructionActivity.EXTRA_TITLE, instruction.getInstructionFormat());
-                intent.putExtra(AddOrEditInstructionActivity.EXTRA_DESCRIPTION, instruction.getOpcode());
+                intent.putExtra(AddOrEditInstructionActivity.EXTRA_INSTRUCTION_FORMAT, instruction.getInstructionFormat());
+                intent.putExtra(AddOrEditInstructionActivity.EXTRA_OPCODE, instruction.getOpcode());
+                intent.putExtra(AddOrEditInstructionActivity.EXTRA_INSTRUCTION_NUMBER, instruction.getInstructionNumber());
                 startActivityForResult(intent, EDIT_INSTRUCTION_REQUEST);
 
             }
@@ -102,26 +104,34 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == ADD_INSTRUCTION_REQUEST && resultCode == RESULT_OK) {
-            String title = data.getStringExtra(AddOrEditInstructionActivity.EXTRA_TITLE);
-            String description = data.getStringExtra(AddOrEditInstructionActivity.EXTRA_DESCRIPTION);
-            int priority = data.getIntExtra(AddOrEditInstructionActivity.EXTRA_PRIORITY, 1);
+        Log.d(TAG, "requestCode: "  + requestCode);
+        Log.d(TAG, "resultCode: " + requestCode);
 
-            Instruction instruction = new Instruction(title, description);
+        if (requestCode == ADD_INSTRUCTION_REQUEST && resultCode == RESULT_OK) {
+            String instructionFormat = data.getStringExtra(AddOrEditInstructionActivity.EXTRA_INSTRUCTION_FORMAT);
+            String opcode = data.getStringExtra(AddOrEditInstructionActivity.EXTRA_OPCODE);
+            int instructionNumber = data.getIntExtra(AddOrEditInstructionActivity.EXTRA_INSTRUCTION_NUMBER, 1);
+
+            Instruction instruction = new Instruction(instructionFormat, opcode, instructionNumber, "R1","R2","R3",-3000,-3000);
             instructionViewModel.insert(instruction);
 
             Toast.makeText(this, "Note saved", Toast.LENGTH_SHORT).show();
-        } else if (requestCode == ADD_INSTRUCTION_REQUEST && resultCode == RESULT_OK) {
+
+        } else if (requestCode == EDIT_INSTRUCTION_REQUEST && resultCode == RESULT_OK) {
+
+            Log.d(TAG, "You are here!");
+
             int id = data.getIntExtra(AddOrEditInstructionActivity.EXTRA_ID, -1);
+
             if (id == -1) {
                 Toast.makeText(this, "Instruction not updated!", Toast.LENGTH_SHORT).show();
             }
 
-            String title = data.getStringExtra(AddOrEditInstructionActivity.EXTRA_TITLE);
-            String description = data.getStringExtra(AddOrEditInstructionActivity.EXTRA_DESCRIPTION);
-            int priority = data.getIntExtra(AddOrEditInstructionActivity.EXTRA_PRIORITY, 1);
+            String instructionFormat = data.getStringExtra(AddOrEditInstructionActivity.EXTRA_INSTRUCTION_FORMAT);
+            String opcode = data.getStringExtra(AddOrEditInstructionActivity.EXTRA_OPCODE);
+            int instructionNumber = data.getIntExtra(AddOrEditInstructionActivity.EXTRA_INSTRUCTION_NUMBER, 1);
 
-            Instruction instruction = new Instruction(title, description);
+            Instruction instruction = new Instruction(instructionFormat, opcode, instructionNumber, "R1","R2","R3",-3000,-3000);
             instruction.setId(id);
             instructionViewModel.update(instruction);
 
@@ -142,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.delete_all_instuctions:
+            case R.id.delete_all_instructions:
                 instructionViewModel.deleteAllInstructions();
                 Toast.makeText(this, "Deleted all instructions in list!", Toast.LENGTH_SHORT).show();
                 return true;

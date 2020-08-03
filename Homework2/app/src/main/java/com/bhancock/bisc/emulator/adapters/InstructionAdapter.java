@@ -55,9 +55,9 @@ public class InstructionAdapter extends ListAdapter<Instruction, InstructionAdap
     @Override
     public void onBindViewHolder(@NonNull InstructionHolder holder, int position) {
         Instruction currentInstruction = getItem(position);
-        holder.textViewTitle.setText(currentInstruction.getInstructionFormat());
-        holder.textViewDescription.setText(currentInstruction.getOpcode());
-        holder.textViewPriority.setText(String.valueOf(3));
+        holder.textViewInstructionFormat.setText(currentInstruction.getInstructionFormat());
+        holder.textViewOpCode.setText(currentInstruction.getOpcode());
+        holder.textViewInstructionNumber.setText(String.valueOf(currentInstruction.getInstructionNumber()));
     }
 
     public Instruction getInstructionAt(int position) {
@@ -65,15 +65,15 @@ public class InstructionAdapter extends ListAdapter<Instruction, InstructionAdap
     }
 
     class InstructionHolder extends RecyclerView.ViewHolder {
-        private TextView textViewTitle;
-        private TextView textViewDescription;
-        private TextView textViewPriority;
+        private TextView textViewInstructionFormat;
+        private TextView textViewOpCode;
+        private TextView textViewInstructionNumber;
 
         public InstructionHolder(@NonNull View itemView) {
             super(itemView);
-            textViewTitle = itemView.findViewById(R.id.text_view_instruction_type);
-            textViewDescription = itemView.findViewById(R.id.text_view_opcode);
-            textViewPriority = itemView.findViewById(R.id.text_view_instruction_number);
+            textViewInstructionFormat = itemView.findViewById(R.id.text_view_instruction_type);
+            textViewOpCode = itemView.findViewById(R.id.text_view_opcode);
+            textViewInstructionNumber = itemView.findViewById(R.id.text_view_instruction_number);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

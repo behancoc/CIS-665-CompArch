@@ -26,20 +26,12 @@
             android:id="@+id/text_view_instruction_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Title"
+            android:text="Instruction Format"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:maxLines="1"
             android:layout_toStartOf="@id/text_view_instruction_number"
             android:layout_alignParentStart="true"
             android:ellipsize="end"/>
-
-<!--        <TextView-->
-<!--            android:id="@+id/text_view_opcode_result"-->
-<!--            android:layout_width="100dp"-->
-<!--            android:hint="addi"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_below="@+id/text_view_instruction_type"-->
-<!--            android:layout_toRightOf="@+id/text_view_opcode"/>-->
 
         <TextView
             android:id="@+id/text_view_opcode"

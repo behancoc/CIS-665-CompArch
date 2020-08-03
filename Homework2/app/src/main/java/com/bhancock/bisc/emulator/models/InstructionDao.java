@@ -27,6 +27,6 @@ public interface InstructionDao {
 //    @Query("SELECT * FROM instruction_table ORDER BY format DESC")
 //    List<Instruction> getAllInstructions();
 
-    @Query("SELECT * FROM instruction_table ORDER BY instructionFormat DESC")
+    @Query("SELECT * FROM instruction_table ORDER BY instructionNumber ASC")
     LiveData<List<Instruction>> getAllInstructions();
 }
