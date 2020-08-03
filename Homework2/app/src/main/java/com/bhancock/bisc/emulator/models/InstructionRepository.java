@@ -1,4 +1,4 @@
-package com.bhancock.bisc.emulator;
+package com.bhancock.bisc.emulator.models;
 
 import android.app.Application;
 import android.os.AsyncTask;

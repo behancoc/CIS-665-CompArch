@@ -1,4 +1,4 @@
-package com.bhancock.bisc.emulator;
+package com.bhancock.bisc.emulator.views;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,13 +17,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.bhancock.bisc.emulator.models.Instruction;
+import com.bhancock.bisc.emulator.adapters.InstructionAdapter;
+import com.bhancock.bisc.emulator.viewmodels.InstructionViewModel;
+import com.bhancock.bisc.emulator.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.loopeer.cardstack.CardStackView;
 
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity implements CardStackView.ItemExpendListener {
+public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     public static final int ADD_INSTRUCTION_REQUEST = 1;
     public static final int EDIT_INSTRUCTION_REQUEST = 1;
@@ -35,8 +38,8 @@ public class MainActivity extends AppCompatActivity implements CardStackView.Ite
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FloatingActionButton addInstuctionButton = findViewById(R.id.add_instruction_button);
-        addInstuctionButton.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton addInstructionButton = findViewById(R.id.add_instruction_button);
+        addInstructionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, AddOrEditInstructionActivity.class);
@@ -65,10 +68,6 @@ public class MainActivity extends AppCompatActivity implements CardStackView.Ite
         instructionViewModel.getAllInstructions().observe(this, new Observer<List<Instruction>>() {
             @Override
             public void onChanged(List<Instruction> instructions) {
-                //Update CardView... possibly.  Not really sure if this is a great approach yet.
-//                Toast.makeText(getApplicationContext(), "onChanged", Toast.LENGTH_SHORT).show();
-
-//                adapter.setInstructions(instructions);
                 adapter.submitList(instructions);
             }
         });
@@ -97,10 +96,6 @@ public class MainActivity extends AppCompatActivity implements CardStackView.Ite
 
             }
         });
-
-
-//        Intent intent = new Intent(MainActivity.this, InstructionTypeActivity.class);
-//        startActivity(intent);
     }
 
     @Override
@@ -149,15 +144,10 @@ public class MainActivity extends AppCompatActivity implements CardStackView.Ite
         switch (item.getItemId()) {
             case R.id.delete_all_instuctions:
                 instructionViewModel.deleteAllInstructions();
-                Toast.makeText(this, "Deleted all instuctions in list!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Deleted all instructions in list!", Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    @Override
-    public void onItemExpend(boolean expend) {
-
     }
 }

@@ -1,39 +1,107 @@
 package com.bhancock.bisc.emulator.models;
 
-import java.util.HashMap;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "instruction_table")
 public class Instruction {
 
-    private String instructionName;
-    private HashMap<String, Byte> instructionMapping = new HashMap<>();
+    @PrimaryKey(autoGenerate = true)
+    private int id;
 
-    public Instruction() {
-        generateInstructionMapping();
+    private String instructionFormat;
+    private String opcode;
+//    private String destinationRegister;
+//    private String sourceRegister1;
+//    private String sourceRegister2;
+//    @ColumnInfo
+//    private int signedImmediate;
+//    @ColumnInfo
+//    private int immediate;
+
+
+
+    public Instruction(String instructionFormat, String opcode) {
+        this.instructionFormat = instructionFormat;
+        this.opcode = opcode;
     }
 
-    public Instruction(String name) {
-        generateInstructionMapping();
-        this.setInstructionName(name);
+//    @Ignore
+//    public Instruction(String instructionFormat, String opcode,
+//                              String sourceRegister1, String sourceRegister2,
+//                              String destinationRegister) {
+//
+//        this.instructionFormat = instructionFormat;
+//        this.opcode = opcode;
+//        this.destinationRegister = destinationRegister;
+//        this.sourceRegister1 = sourceRegister1;
+//        this.sourceRegister2 = sourceRegister2;
+//
+//    }
+//
+//    @Ignore
+//    public Instruction(String instructionFormat, String opcode,
+//                              String destinationRegister, String sourceRegister1,
+//                              int signedImmediate) {
+//
+//        this.instructionFormat = instructionFormat;
+//        this.opcode = opcode;
+//        this.destinationRegister = destinationRegister;
+//        this.sourceRegister1 = sourceRegister1;
+//        this.signedImmediate = signedImmediate;
+//
+//    }
+//
+//    @Ignore
+//    public Instruction(String instructionFormat, String opcode,
+//                              String destinationRegister, int immediate) {
+//
+//        this.instructionFormat = instructionFormat;
+//        this.opcode = opcode;
+//        this.destinationRegister = destinationRegister;
+//        this.immediate = immediate;
+//    }
+
+    public int getId() {
+        return id;
     }
 
-    public String getInstructionName() {
-        return instructionName;
+    public String getInstructionFormat() {
+        return instructionFormat;
     }
 
-    public void setInstructionName(String instructionName) {
-        this.instructionName = instructionName;
+    public String getOpcode() {
+        return opcode;
     }
 
-    public void generateInstructionMapping() {
-        instructionMapping.put("add", (byte) 0);
-        instructionMapping.put("addi", (byte) 1);
-        instructionMapping.put("nand", (byte) 2);
-        instructionMapping.put("lui", (byte) 3);
-        instructionMapping.put("sw", (byte) 4);
-        instructionMapping.put("lw", (byte) 5);
-        instructionMapping.put("beq", (byte) 6);
-        instructionMapping.put("jalr", (byte) 7);
+//    public String getDestinationRegister() {
+//        return destinationRegister;
+//    }
+//
+//    public String getSourceRegister1() {
+//        return sourceRegister1;
+//    }
+//
+//    public String getSourceRegister2() {
+//        return sourceRegister2;
+//    }
+
+//    public int getSignedImmediate() {
+//        return signedImmediate;
+//    }
+//
+//    public int getImmediate() {
+//        return immediate;
+//    }
+
+//    public void setImmediate(int immediate) {
+//        this.immediate = immediate;
+//    }
+
+    public void setId(int id) {
+        this.id = id;
     }
-
-
 }

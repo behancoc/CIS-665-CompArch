@@ -1,4 +1,4 @@
-package com.bhancock.bisc.emulator;
+package com.bhancock.bisc.emulator.adapters;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,8 +11,8 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.bhancock.bisc.emulator.models.Instruction;
+import com.bhancock.bisc.emulator.R;
 
 public class InstructionAdapter extends ListAdapter<Instruction, InstructionAdapter.InstructionHolder> {
 
@@ -29,7 +29,7 @@ public class InstructionAdapter extends ListAdapter<Instruction, InstructionAdap
 
         @Override
         public boolean areContentsTheSame(@NonNull Instruction oldItem, @NonNull Instruction newItem) {
-            if (oldItem.getFormat().equals(newItem.getFormat()) &&
+            if (oldItem.getInstructionFormat().equals(newItem.getInstructionFormat()) &&
                 oldItem.getOpcode().equals(newItem.getOpcode())) {
                 return true;
             } else {
@@ -55,7 +55,7 @@ public class InstructionAdapter extends ListAdapter<Instruction, InstructionAdap
     @Override
     public void onBindViewHolder(@NonNull InstructionHolder holder, int position) {
         Instruction currentInstruction = getItem(position);
-        holder.textViewTitle.setText(currentInstruction.getFormat());
+        holder.textViewTitle.setText(currentInstruction.getInstructionFormat());
         holder.textViewDescription.setText(currentInstruction.getOpcode());
         holder.textViewPriority.setText(String.valueOf(3));
     }
@@ -71,9 +71,9 @@ public class InstructionAdapter extends ListAdapter<Instruction, InstructionAdap
 
         public InstructionHolder(@NonNull View itemView) {
             super(itemView);
-            textViewTitle = itemView.findViewById(R.id.text_view_title);
-            textViewDescription = itemView.findViewById(R.id.text_view_description);
-            textViewPriority = itemView.findViewById(R.id.text_view_priority);
+            textViewTitle = itemView.findViewById(R.id.text_view_instruction_type);
+            textViewDescription = itemView.findViewById(R.id.text_view_opcode);
+            textViewPriority = itemView.findViewById(R.id.text_view_instruction_number);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

@@ -1,4 +1,4 @@
-package com.bhancock.bisc.emulator;
+package com.bhancock.bisc.emulator.models;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -52,6 +52,10 @@ public abstract class InstructionDatabase extends RoomDatabase {
             instructionDao.insert(new Instruction("RRR-type", "add"));
             instructionDao.insert(new Instruction("RRI-type", "sw"));
             instructionDao.insert(new Instruction("RI-type", "jalr"));
+
+//            instructionDao.insert(new Instruction("RRR-type","add", "R1", "R2", "R3"));
+//            instructionDao.insert(new Instruction("RRI-type","addi", "R1", "R2", 5));
+
             return null;
         }
     }

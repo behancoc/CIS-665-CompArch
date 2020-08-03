@@ -1,11 +1,13 @@
-package com.bhancock.bisc.emulator;
+package com.bhancock.bisc.emulator.viewmodels;
 
 import android.app.Application;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
+
+import com.bhancock.bisc.emulator.models.Instruction;
+import com.bhancock.bisc.emulator.models.InstructionRepository;
 
 import java.util.List;
 
