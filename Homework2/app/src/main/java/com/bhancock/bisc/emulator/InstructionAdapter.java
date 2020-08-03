@@ -41,6 +41,10 @@ public class InstructionAdapter extends RecyclerView.Adapter<InstructionAdapter.
         notifyDataSetChanged();
     }
 
+    public Instruction getInstructionAt(int position) {
+        return instructions.get(position);
+    }
+
     class InstructionHolder extends RecyclerView.ViewHolder {
         private TextView textViewTitle;
         private TextView textViewDescription;

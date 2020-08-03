@@ -17,6 +17,14 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:listitem="@layout/instruction_item"/>
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/add_instruction_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_baseline_add_24"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="32dp"/>
+
 
 <!--    <com.loopeer.cardstack.CardStackView-->
 <!--        android:id="@+id/stackview_main"-->
