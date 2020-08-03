@@ -12,8 +12,9 @@ import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.Toast;
 
-public class AddInstructionActivity extends AppCompatActivity {
+public class AddOrEditInstructionActivity extends AppCompatActivity {
 
+    public static final String EXTRA_ID = "com.bhancock.bisc.emulator.EXTRA_ID";
     public static final String EXTRA_TITLE = "com.bhancock.bisc.emulator.EXTRA_TITLE";
     public static final String EXTRA_DESCRIPTION = "com.bhancock.bisc.emulator.EXTRA_DESCRIPTION";
     public static final String EXTRA_PRIORITY = "com.bhancock.bisc.emulator.EXTRA_PRIORITY";
@@ -35,7 +36,17 @@ public class AddInstructionActivity extends AppCompatActivity {
         numberPicker.setMaxValue(10);
 
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_close_24);
-        setTitle("Add Instruction");
+
+        Intent intent = getIntent();
+
+        if(intent.hasExtra(EXTRA_ID)) {
+            setTitle("Edit Instruction");
+            editTextTitle.setText(intent.getStringExtra(EXTRA_TITLE));
+            editTextDescription.setText(intent.getStringExtra(EXTRA_DESCRIPTION));
+            numberPicker.setValue(intent.getIntExtra(EXTRA_PRIORITY, 1));
+        } else {
+            setTitle("Add Instruction");
+        }
     }
 
     @Override
@@ -71,6 +82,10 @@ public class AddInstructionActivity extends AppCompatActivity {
         data.putExtra(EXTRA_DESCRIPTION, description);
         data.putExtra(EXTRA_PRIORITY, priority);
 
+        int id = getIntent().getIntExtra(EXTRA_ID, -1);
+        if (id != -1) {
+            data.putExtra(EXTRA_ID, id);
+        }
         setResult(RESULT_OK, data);
         finish();
     }

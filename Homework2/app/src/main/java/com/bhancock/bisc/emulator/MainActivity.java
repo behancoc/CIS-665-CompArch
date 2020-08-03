@@ -26,6 +26,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements CardStackView.ItemExpendListener {
     private static final String TAG = MainActivity.class.getSimpleName();
     public static final int ADD_INSTRUCTION_REQUEST = 1;
+    public static final int EDIT_INSTRUCTION_REQUEST = 1;
 
     private InstructionViewModel instructionViewModel;
 
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements CardStackView.Ite
         addInstuctionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, AddInstructionActivity.class);
+                Intent intent = new Intent(MainActivity.this, AddOrEditInstructionActivity.class);
                 startActivityForResult(intent, ADD_INSTRUCTION_REQUEST);
             }
         });
@@ -75,6 +76,18 @@ public class MainActivity extends AppCompatActivity implements CardStackView.Ite
             }
         }).attachToRecyclerView(recyclerView);
 
+        adapter.setOnItemClickListener(new InstructionAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Instruction instruction) {
+                Intent intent = new Intent(MainActivity.this, AddOrEditInstructionActivity.class);
+                intent.putExtra(AddOrEditInstructionActivity.EXTRA_ID, instruction.getId());
+                intent.putExtra(AddOrEditInstructionActivity.EXTRA_TITLE, instruction.getFormat());
+                intent.putExtra(AddOrEditInstructionActivity.EXTRA_DESCRIPTION, instruction.getOpcode());
+                startActivityForResult(intent, EDIT_INSTRUCTION_REQUEST);
+
+            }
+        });
+
 
 //        Intent intent = new Intent(MainActivity.this, InstructionTypeActivity.class);
 //        startActivity(intent);
@@ -85,14 +98,30 @@ public class MainActivity extends AppCompatActivity implements CardStackView.Ite
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == ADD_INSTRUCTION_REQUEST && resultCode == RESULT_OK) {
-            String title = data.getStringExtra(AddInstructionActivity.EXTRA_TITLE);
-            String description = data.getStringExtra(AddInstructionActivity.EXTRA_DESCRIPTION);
-            int priority = data.getIntExtra(AddInstructionActivity.EXTRA_PRIORITY, 1);
+            String title = data.getStringExtra(AddOrEditInstructionActivity.EXTRA_TITLE);
+            String description = data.getStringExtra(AddOrEditInstructionActivity.EXTRA_DESCRIPTION);
+            int priority = data.getIntExtra(AddOrEditInstructionActivity.EXTRA_PRIORITY, 1);
 
             Instruction instruction = new Instruction(title, description);
             instructionViewModel.insert(instruction);
 
             Toast.makeText(this, "Note saved", Toast.LENGTH_SHORT).show();
+        } else if (requestCode == ADD_INSTRUCTION_REQUEST && resultCode == RESULT_OK) {
+            int id = data.getIntExtra(AddOrEditInstructionActivity.EXTRA_ID, -1);
+            if (id == -1) {
+                Toast.makeText(this, "Instruction not updated!", Toast.LENGTH_SHORT).show();
+            }
+
+            String title = data.getStringExtra(AddOrEditInstructionActivity.EXTRA_TITLE);
+            String description = data.getStringExtra(AddOrEditInstructionActivity.EXTRA_DESCRIPTION);
+            int priority = data.getIntExtra(AddOrEditInstructionActivity.EXTRA_PRIORITY, 1);
+
+            Instruction instruction = new Instruction(title, description);
+            instruction.setId(id);
+            instructionViewModel.update(instruction);
+
+            Toast.makeText(MainActivity.this, "Instruction Updated", Toast.LENGTH_SHORT).show();
+
         } else {
             Toast.makeText(this, "Instruction discarded", Toast.LENGTH_SHORT).show();
         }

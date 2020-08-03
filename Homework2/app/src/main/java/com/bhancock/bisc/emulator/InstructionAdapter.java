@@ -1,5 +1,6 @@
 package com.bhancock.bisc.emulator;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +14,9 @@ import java.util.List;
 
 public class InstructionAdapter extends RecyclerView.Adapter<InstructionAdapter.InstructionHolder> {
 
+    private final String TAG = InstructionAdapter.class.getSimpleName();
     private List<Instruction> instructions = new ArrayList<>();
+    private OnItemClickListener onItemClickListener;
 
     @NonNull
     @Override
@@ -55,6 +58,27 @@ public class InstructionAdapter extends RecyclerView.Adapter<InstructionAdapter.
             textViewTitle = itemView.findViewById(R.id.text_view_title);
             textViewDescription = itemView.findViewById(R.id.text_view_description);
             textViewPriority = itemView.findViewById(R.id.text_view_priority);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = getAdapterPosition();
+
+                    try {
+                        onItemClickListener.onItemClick(instructions.get(position));
+                    } catch (NullPointerException e) {
+                        Log.e(TAG, "Null Pointer just occurred " + e.getMessage());
+                    }
+                }
+            });
         }
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(Instruction instruction);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
     }
 }

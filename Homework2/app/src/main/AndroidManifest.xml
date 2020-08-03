@@ -9,7 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".AddInstructionActivity"
+        <activity android:name=".AddOrEditInstructionActivity"
                   android:parentActivityName=".MainActivity">
         </activity>
         <activity android:name=".activities.OperandActivity" />
