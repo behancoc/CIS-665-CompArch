@@ -59,7 +59,8 @@ public class MainActivity extends AppCompatActivity implements CardStackView.Ite
                 //Update CardView... possibly.  Not really sure if this is a great approach yet.
 //                Toast.makeText(getApplicationContext(), "onChanged", Toast.LENGTH_SHORT).show();
 
-                adapter.setInstructions(instructions);
+//                adapter.setInstructions(instructions);
+                adapter.submitList(instructions);
             }
         });
 

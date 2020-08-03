@@ -7,16 +7,42 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class InstructionAdapter extends RecyclerView.Adapter<InstructionAdapter.InstructionHolder> {
+public class InstructionAdapter extends ListAdapter<Instruction, InstructionAdapter.InstructionHolder> {
 
     private final String TAG = InstructionAdapter.class.getSimpleName();
-    private List<Instruction> instructions = new ArrayList<>();
+    private static final DiffUtil.ItemCallback<Instruction> DIFF_UTIL_INSTRUCTION_CALLBACK = new DiffUtil.ItemCallback<Instruction>() {
+        @Override
+        public boolean areItemsTheSame(@NonNull Instruction oldItem, @NonNull Instruction newItem) {
+            if (oldItem.getId() == newItem.getId()) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        @Override
+        public boolean areContentsTheSame(@NonNull Instruction oldItem, @NonNull Instruction newItem) {
+            if (oldItem.getFormat().equals(newItem.getFormat()) &&
+                oldItem.getOpcode().equals(newItem.getOpcode())) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    };
+//    private List<Instruction> instructions = new ArrayList<>();
     private OnItemClickListener onItemClickListener;
+
+    public InstructionAdapter() {
+        super(DIFF_UTIL_INSTRUCTION_CALLBACK);
+    }
 
     @NonNull
     @Override
@@ -28,24 +54,19 @@ public class InstructionAdapter extends RecyclerView.Adapter<InstructionAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull InstructionHolder holder, int position) {
-        Instruction currentInstruction = instructions.get(position);
+        Instruction currentInstruction = getItem(position);
         holder.textViewTitle.setText(currentInstruction.getFormat());
         holder.textViewDescription.setText(currentInstruction.getOpcode());
         holder.textViewPriority.setText(String.valueOf(3));
     }
 
-    @Override
-    public int getItemCount() {
-        return instructions.size();
-    }
-
-    public void setInstructions(List<Instruction> instructions) {
-        this.instructions = instructions;
-        notifyDataSetChanged();
-    }
+//    public void setInstructions(List<Instruction> instructions) {
+//        this.instructions = instructions;
+//        notifyDataSetChanged();
+//    }
 
     public Instruction getInstructionAt(int position) {
-        return instructions.get(position);
+        return getItem(position);
     }
 
     class InstructionHolder extends RecyclerView.ViewHolder {
@@ -65,7 +86,7 @@ public class InstructionAdapter extends RecyclerView.Adapter<InstructionAdapter.
                     int position = getAdapterPosition();
 
                     try {
-                        onItemClickListener.onItemClick(instructions.get(position));
+                        onItemClickListener.onItemClick(getItem(position));
                     } catch (NullPointerException e) {
                         Log.e(TAG, "Null Pointer just occurred " + e.getMessage());
                     }
