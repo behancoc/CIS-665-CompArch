@@ -37,7 +37,7 @@ public class InstructionAdapter extends ListAdapter<Instruction, InstructionAdap
             }
         }
     };
-//    private List<Instruction> instructions = new ArrayList<>();
+
     private OnItemClickListener onItemClickListener;
 
     public InstructionAdapter() {
@@ -59,11 +59,6 @@ public class InstructionAdapter extends ListAdapter<Instruction, InstructionAdap
         holder.textViewDescription.setText(currentInstruction.getOpcode());
         holder.textViewPriority.setText(String.valueOf(3));
     }
-
-//    public void setInstructions(List<Instruction> instructions) {
-//        this.instructions = instructions;
-//        notifyDataSetChanged();
-//    }
 
     public Instruction getInstructionAt(int position) {
         return getItem(position);
