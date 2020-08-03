@@ -8,8 +8,12 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.NumberPicker;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class AddOrEditInstructionActivity extends AppCompatActivity {
@@ -19,7 +23,11 @@ public class AddOrEditInstructionActivity extends AppCompatActivity {
     public static final String EXTRA_DESCRIPTION = "com.bhancock.bisc.emulator.EXTRA_DESCRIPTION";
     public static final String EXTRA_PRIORITY = "com.bhancock.bisc.emulator.EXTRA_PRIORITY";
 
-    private EditText editTextTitle;
+    private TextView instructionFormatTextView;
+    private RadioGroup radioGroup;
+    private RadioButton radioButton;
+    private TextView textView;
+
     private EditText editTextDescription;
     private NumberPicker numberPicker;
 
@@ -28,9 +36,11 @@ public class AddOrEditInstructionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_instruction);
 
-        editTextTitle = findViewById(R.id.edit_text_title);
+        instructionFormatTextView = findViewById(R.id.instruction_format_selection_text_view);
         editTextDescription = (EditText) findViewById(R.id.edit_text_description);
         numberPicker = findViewById(R.id.number_picker_priority);
+
+        radioGroup = findViewById(R.id.radioGroup);
 
         numberPicker.setMinValue(1);
         numberPicker.setMaxValue(10);
@@ -41,13 +51,20 @@ public class AddOrEditInstructionActivity extends AppCompatActivity {
 
         if(intent.hasExtra(EXTRA_ID)) {
             setTitle("Edit Instruction");
-            editTextTitle.setText(intent.getStringExtra(EXTRA_TITLE));
+            instructionFormatTextView.setText(intent.getStringExtra(EXTRA_TITLE));
             editTextDescription.setText(intent.getStringExtra(EXTRA_DESCRIPTION));
             numberPicker.setValue(intent.getIntExtra(EXTRA_PRIORITY, 1));
         } else {
             setTitle("Add Instruction");
         }
     }
+
+    public void checkButton(View view) {
+        int radioId = radioGroup.getCheckedRadioButtonId();
+        radioButton = findViewById(radioId);
+        instructionFormatTextView.setText(radioButton.getText());
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -68,7 +85,7 @@ public class AddOrEditInstructionActivity extends AppCompatActivity {
     }
 
     private void saveInstruction() {
-        String title = editTextTitle.getText().toString();
+        String title = instructionFormatTextView.getText().toString();
         String description = editTextDescription.getText().toString();
         int priority = numberPicker.getValue();
 

@@ -25,17 +25,4 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="32dp"/>
 
-
-<!--    <com.loopeer.cardstack.CardStackView-->
-<!--        android:id="@+id/stackview_main"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:background="@android:color/white"-->
-<!--        android:clipToPadding="false"-->
-<!--        android:paddingLeft="12dp"-->
-<!--        android:paddingRight="12dp"-->
-<!--        android:paddingTop="12dp"/>-->
-
-
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
