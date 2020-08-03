@@ -8,13 +8,14 @@
     android:layout_marginTop="8dp"
     android:layout_marginEnd="8dp">
 
+
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="8dp">
 
         <TextView
-            android:id="@+id/text_view_priority"
+            android:id="@+id/text_view_instruction_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -22,24 +23,52 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
 
         <TextView
-            android:id="@+id/text_view_title"
+            android:id="@+id/text_view_instruction_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Title"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:maxLines="1"
-            android:layout_toStartOf="@id/text_view_priority"
+            android:layout_toStartOf="@id/text_view_instruction_number"
             android:layout_alignParentStart="true"
             android:ellipsize="end"/>
 
+<!--        <TextView-->
+<!--            android:id="@+id/text_view_opcode_result"-->
+<!--            android:layout_width="100dp"-->
+<!--            android:hint="addi"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_below="@+id/text_view_instruction_type"-->
+<!--            android:layout_toRightOf="@+id/text_view_opcode"/>-->
+
         <TextView
-            android:id="@+id/text_view_description"
+            android:id="@+id/text_view_opcode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/text_view_title"
-            android:text="Description"/>
+            android:layout_below="@+id/text_view_instruction_type"
+            android:text="Opcode:"/>
+
+        <TextView
+            android:id="@+id/text_view_dest_register"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/text_view_opcode"
+            android:text="Destination Register:"/>
 
 
+        <TextView
+            android:id="@+id/text_view_source_register1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/text_view_dest_register"
+            android:text="Source Register 1:"/>
+
+        <TextView
+            android:id="@+id/text_view_source_register2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/text_view_source_register1"
+            android:text="Source Register 2:"/>
 
     </RelativeLayout>
 
