@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 
 public class AddOrEditInstructionActivity extends AppCompatActivity {
 
+    public static final String TAG = AddOrEditInstructionActivity.class.getSimpleName();
     public static final String EXTRA_ID = "com.bhancock.bisc.emulator.EXTRA_ID";
     public static final String EXTRA_TITLE = "com.bhancock.bisc.emulator.EXTRA_TITLE";
     public static final String EXTRA_DESCRIPTION = "com.bhancock.bisc.emulator.EXTRA_DESCRIPTION";
@@ -26,10 +28,10 @@ public class AddOrEditInstructionActivity extends AppCompatActivity {
     private TextView instructionFormatTextView;
     private RadioGroup radioGroup;
     private RadioButton radioButton;
-    private TextView textView;
 
     private EditText editTextDescription;
     private NumberPicker numberPicker;
+    private NumberPicker opCodePicker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,11 +41,15 @@ public class AddOrEditInstructionActivity extends AppCompatActivity {
         instructionFormatTextView = findViewById(R.id.instruction_format_selection_text_view);
         editTextDescription = (EditText) findViewById(R.id.edit_text_description);
         numberPicker = findViewById(R.id.number_picker_priority);
+        opCodePicker = findViewById(R.id.opcode_picker);
 
         radioGroup = findViewById(R.id.radioGroup);
 
         numberPicker.setMinValue(1);
         numberPicker.setMaxValue(10);
+
+        opCodePicker.setMinValue(0);
+        opCodePicker.setMaxValue(20);
 
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_close_24);
 
@@ -52,7 +58,7 @@ public class AddOrEditInstructionActivity extends AppCompatActivity {
         if(intent.hasExtra(EXTRA_ID)) {
             setTitle("Edit Instruction");
             instructionFormatTextView.setText(intent.getStringExtra(EXTRA_TITLE));
-            editTextDescription.setText(intent.getStringExtra(EXTRA_DESCRIPTION));
+            opCodePicker.setValue(Integer.parseInt(intent.getStringExtra(EXTRA_DESCRIPTION)));
             numberPicker.setValue(intent.getIntExtra(EXTRA_PRIORITY, 1));
         } else {
             setTitle("Add Instruction");
@@ -86,10 +92,12 @@ public class AddOrEditInstructionActivity extends AppCompatActivity {
 
     private void saveInstruction() {
         String title = instructionFormatTextView.getText().toString();
-        String description = editTextDescription.getText().toString();
+        String description = String.valueOf(opCodePicker.getValue());
+
+        Log.d(TAG, "Description: " + description);
         int priority = numberPicker.getValue();
 
-        if (title.trim().isEmpty() || description.trim().isEmpty()) {
+        if (title.trim().isEmpty()) {
             Toast.makeText(this, "Do something", Toast.LENGTH_SHORT).show();
             return;
         }

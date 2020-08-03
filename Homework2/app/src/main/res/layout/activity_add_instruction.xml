@@ -46,6 +46,20 @@
             android:onClick="checkButton"/>
     </RadioGroup>
 
+    <TextView
+        android:id="@+id/opcode_selection_text_view"
+        android:hint="Select Opcode Format"
+        android:textSize="20sp"
+        android:inputType="text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"/>
+
+    <NumberPicker
+        android:id="@+id/opcode_picker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
     <EditText
         android:id="@+id/edit_text_description"
         android:hint="Description"
