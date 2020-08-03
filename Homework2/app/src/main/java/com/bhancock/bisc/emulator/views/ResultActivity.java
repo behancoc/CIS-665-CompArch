@@ -114,10 +114,15 @@ public class ResultActivity extends AppCompatActivity {
 
 
 
-
-
         instructionMapping.put("add", addInstructionAssemblyFormat);
         instructionMapping.put("addi", addiInstructionAssemblyFormat);
+        instructionMapping.put("nand", nandInstructionAssemblyFormat);
+        instructionMapping.put("lui", luiInstructionAssemblyFormat);
+        instructionMapping.put("sw", swInstructionAssemblyFormat);
+        instructionMapping.put("lw", lwInstructionAssemblyFormat);
+        instructionMapping.put("beq", beqInstructionAssemblyFormat);
+        instructionMapping.put("jalr", jalrInstructionAssemblyFormat);
+
 
         Log.d(TAG, "Hey " + instructionMapping.get("addi"));
 
