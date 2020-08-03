@@ -44,6 +44,15 @@ public class MainActivity extends AppCompatActivity implements CardStackView.Ite
             }
         });
 
+        FloatingActionButton runInstructionButton = findViewById(R.id.execute_instruction_button);
+        runInstructionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ResultActivity.class);
+                startActivity(intent);
+            }
+        });
+
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
@@ -82,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements CardStackView.Ite
             public void onItemClick(Instruction instruction) {
                 Intent intent = new Intent(MainActivity.this, AddOrEditInstructionActivity.class);
                 intent.putExtra(AddOrEditInstructionActivity.EXTRA_ID, instruction.getId());
-                intent.putExtra(AddOrEditInstructionActivity.EXTRA_TITLE, instruction.getFormat());
+                intent.putExtra(AddOrEditInstructionActivity.EXTRA_TITLE, instruction.getInstructionFormat());
                 intent.putExtra(AddOrEditInstructionActivity.EXTRA_DESCRIPTION, instruction.getOpcode());
                 startActivityForResult(intent, EDIT_INSTRUCTION_REQUEST);
 
