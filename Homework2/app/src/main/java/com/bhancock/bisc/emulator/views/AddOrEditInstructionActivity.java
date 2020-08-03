@@ -23,16 +23,16 @@ public class AddOrEditInstructionActivity extends AppCompatActivity {
 
     public static final String TAG = AddOrEditInstructionActivity.class.getSimpleName();
     public static final String EXTRA_ID = "com.bhancock.bisc.emulator.EXTRA_ID";
-    public static final String EXTRA_INSTRUCTION_FORMAT = "com.bhancock.bisc.emulator.EXTRA_TITLE";
-    public static final String EXTRA_OPCODE = "com.bhancock.bisc.emulator.EXTRA_DESCRIPTION";
-    public static final String EXTRA_INSTRUCTION_NUMBER = "com.bhancock.bisc.emulator.EXTRA_PRIORITY";
+    public static final String EXTRA_INSTRUCTION_FORMAT = "com.bhancock.bisc.emulator.EXTRA_INSTRUCTION_FORMAT";
+    public static final String EXTRA_OPCODE = "com.bhancock.bisc.emulator.EXTRA_OPCODE";
+    public static final String EXTRA_INSTRUCTION_NUMBER = "com.bhancock.bisc.emulator.EXTRA_INSTRUCTION_NUMBER";
 
     private TextView instructionFormatTextView;
     private RadioGroup radioGroup;
     private RadioButton radioButton;
 
     private EditText editTextDescription;
-    private NumberPicker numberPicker;
+    private NumberPicker instructionNumberPicker;
     private NumberPicker opCodePicker;
 
     @Override
@@ -42,13 +42,13 @@ public class AddOrEditInstructionActivity extends AppCompatActivity {
 
         instructionFormatTextView = findViewById(R.id.instruction_format_selection_text_view);
         editTextDescription = (EditText) findViewById(R.id.edit_text_description);
-        numberPicker = findViewById(R.id.number_picker_priority);
+        instructionNumberPicker = findViewById(R.id.instruction_number);
         opCodePicker = findViewById(R.id.opcode_picker);
 
         radioGroup = findViewById(R.id.radioGroup);
 
-        numberPicker.setMinValue(1);
-        numberPicker.setMaxValue(10);
+        instructionNumberPicker.setMinValue(1);
+        instructionNumberPicker.setMaxValue(10);
 
         opCodePicker.setMinValue(0);
         opCodePicker.setMaxValue(20);
@@ -61,7 +61,9 @@ public class AddOrEditInstructionActivity extends AppCompatActivity {
             setTitle("Edit Instruction");
             instructionFormatTextView.setText(intent.getStringExtra(EXTRA_INSTRUCTION_FORMAT));
             opCodePicker.setValue(Integer.parseInt(intent.getStringExtra(EXTRA_OPCODE)));
-            numberPicker.setValue(intent.getIntExtra(EXTRA_INSTRUCTION_NUMBER, 1));
+            instructionNumberPicker.setValue(intent.getIntExtra(EXTRA_INSTRUCTION_NUMBER, 1));
+
+            Log.d(TAG, "Set InstructionNumber" +  intent.getIntExtra(EXTRA_INSTRUCTION_NUMBER, 1));
 
         } else {
             setTitle("Add Instruction");
@@ -97,8 +99,8 @@ public class AddOrEditInstructionActivity extends AppCompatActivity {
         String instructionFormat = instructionFormatTextView.getText().toString();
         String opCode = String.valueOf(opCodePicker.getValue());
 
-        Log.d(TAG, "Description: " + opCode);
-        int instructionNumber = numberPicker.getValue();
+        Log.d(TAG, "Opcode: " + opCode);
+        int instructionNumber = instructionNumberPicker.getValue();
 
         if (instructionFormat.trim().isEmpty()) {
             Toast.makeText(this, "Do something", Toast.LENGTH_SHORT).show();
