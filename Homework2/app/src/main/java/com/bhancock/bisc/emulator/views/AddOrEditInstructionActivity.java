@@ -48,7 +48,6 @@ public class AddOrEditInstructionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_instruction);
 
         instructionFormatTextView = findViewById(R.id.instruction_format_selection_text_view);
-        editTextDescription = (EditText) findViewById(R.id.edit_text_description);
         instructionNumberPicker = findViewById(R.id.instruction_number);
         opCodePicker = findViewById(R.id.opcode_picker);
 
@@ -111,7 +110,7 @@ public class AddOrEditInstructionActivity extends AppCompatActivity {
         int instructionNumber = instructionNumberPicker.getValue();
 
         if (instructionFormat.trim().isEmpty()) {
-            Toast.makeText(this, "Do something", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please make a selection.", Toast.LENGTH_SHORT).show();
             return;
         }
 

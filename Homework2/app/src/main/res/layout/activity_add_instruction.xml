@@ -11,7 +11,7 @@
     
     <TextView
         android:id="@+id/instruction_format_selection_text_view"
-        android:hint="Select Instruction Format"
+        android:hint="@string/select_instruction_format"
         android:textSize="20sp"
         android:inputType="text"
         android:layout_width="match_parent"
@@ -27,7 +27,7 @@
             android:id="@+id/radio_button_1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="RRR-type"
+            android:text="@string/r_type"
             android:onClick="checkButton"
             android:checked="true"/>
 
@@ -35,20 +35,34 @@
             android:id="@+id/radio_button_2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="RRI-type"
+            android:text="@string/i_type"
             android:onClick="checkButton"/>
 
         <RadioButton
             android:id="@+id/radio_button_3"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="RI-type"
+            android:text="@string/s_type"
+            android:onClick="checkButton"/>
+
+        <RadioButton
+            android:id="@+id/radio_button_4"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/b_type"
+            android:onClick="checkButton"/>
+
+        <RadioButton
+            android:id="@+id/radio_button_5"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/j_type"
             android:onClick="checkButton"/>
     </RadioGroup>
 
     <TextView
         android:id="@+id/opcode_selection_text_view"
-        android:hint="Select Opcode Format"
+        android:hint="@string/select_opcode_format"
         android:textSize="20sp"
         android:inputType="text"
         android:layout_width="match_parent"
@@ -60,17 +74,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <EditText
-        android:id="@+id/edit_text_description"
-        android:hint="Description"
-        android:inputType="textMultiLine"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Instruction Number:"
+        android:text="@string/instruction_number"
         android:layout_margin="8dp"
         android:textAppearance="@android:style/TextAppearance.Medium"/>
 

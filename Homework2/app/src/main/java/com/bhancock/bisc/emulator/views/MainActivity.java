@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
             Instruction instruction = new Instruction(instructionFormat, opcode, instructionNumber, "R1","R2","R3",-3000,-3000);
             instructionViewModel.insert(instruction);
 
-            Toast.makeText(this, "Note saved", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Instruction saved", Toast.LENGTH_SHORT).show();
 
         } else if (requestCode == EDIT_INSTRUCTION_REQUEST && resultCode == RESULT_OK) {
 

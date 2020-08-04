@@ -73,31 +73,51 @@ public class ResultActivity extends AppCompatActivity {
             public void onChanged(List<Instruction> instructions) {
                 if (instructions != null) {
 
+                    byte[] byteArray = new byte[4];
+
                     for(int i = 0; i < instructions.size(); i ++) {
 
                         Log.d(TAG, "Grabbing some formats!: " +instructions.get(i).getInstructionFormat());
 
-                        String key = instructions.get(i).getOpcode().toLowerCase();
+                        String opcode = instructions.get(i).getOpcode().toLowerCase();
                         String formatCheck = instructions.get(i).getInstructionFormat().toLowerCase();
 
-                        if(instructionMapping.containsKey(key)) {
+                        int binaryOpcode = instructions.get(i).getBinaryRepresentation(formatCheck);
+
+
+                        if(instructionMapping.containsKey(opcode)) {
                             continue;
                         } else {
 
-                            if(formatCheck.equalsIgnoreCase("rrr-type")) {
+                            if(formatCheck.equalsIgnoreCase("r-type")) {                         //7 bits
                                 ArrayList<Object> assemblyFormat = new ArrayList<>();
-                                assemblyFormat.add(0, instructions.get(i).getDestinationRegister());
-                                assemblyFormat.add(1, instructions.get(i).getSourceRegister1());
-                                assemblyFormat.add(2, instructions.get(i).getSourceRegister2());
+                                assemblyFormat.add(0, instructions.get(i).getDestinationRegister());    //5 bits
+                                assemblyFormat.add(1, instructions.get(i).getSourceRegister1());        //5 bits
+                                assemblyFormat.add(2, instructions.get(i).getSourceRegister2());        //5 bits
 
-                                instructionMapping.put(key, assemblyFormat);
+                                //Need to figure out what goes in last 10 bits
+                                instructionMapping.put(opcode, assemblyFormat);
 
-                            } else if (formatCheck.equalsIgnoreCase("rri-type")) {
+                            } else if (formatCheck.equalsIgnoreCase("i-type")) {                 //7 bits
+                                ArrayList<Object> assemblyFormat = new ArrayList<>();
+                                assemblyFormat.add(0, instructions.get(i).getDestinationRegister());    // 5 bits
+                                assemblyFormat.add(1, instructions.get(i).getSourceRegister1());        // 5 bits
+                                assemblyFormat.add(2, instructions.get(i).getSignedImmediate());        //15 bits
+                                instructionMapping.put(opcode, assemblyFormat);
+
+                            } else if (formatCheck.equalsIgnoreCase("s-type")) {                    //7 bits
+                                ArrayList<Object> assemblyFormat = new ArrayList<>();
+                                assemblyFormat.add(0, instructions.get(i).getDestinationRegister());        //5 bits
+                                assemblyFormat.add(1, instructions.get(i).getSourceRegister1());            //5 bits
+                                assemblyFormat.add(2, instructions.get(i).getSignedImmediate());
+                                instructionMapping.put(opcode, assemblyFormat);
+
+                            } else if (formatCheck.equalsIgnoreCase("b-type")) {
                                 ArrayList<Object> assemblyFormat = new ArrayList<>();
                                 assemblyFormat.add(0, instructions.get(i).getDestinationRegister());
                                 assemblyFormat.add(1, instructions.get(i).getSourceRegister1());
                                 assemblyFormat.add(2, instructions.get(i).getSignedImmediate());
-                                instructionMapping.put(key, assemblyFormat);
+                                instructionMapping.put(opcode, assemblyFormat);
 
                             } else {
                                 ArrayList<Object> assemblyFormat = new ArrayList<>();
@@ -106,9 +126,6 @@ public class ResultActivity extends AppCompatActivity {
                             }
                         }
                     }
-
-
-
 
                 } else {
                     Log.d(TAG, "List is null");
@@ -119,11 +136,6 @@ public class ResultActivity extends AppCompatActivity {
 
 
     private void computeInstructionResult(String opcode) {
-    }
 
-    private void createMapping(String opcode, String destinationReg, String sourceReg1,
-                               String sourceReg2, int signedImmed, int immed ) {
-
-        opcode = opcode.toLowerCase();
     }
 }
