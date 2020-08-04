@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="8dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginEnd="8dp">
+
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp">
+
+
+        <TextView
+            android:id="@+id/text_view_opcode_result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/opcode"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:maxLines="1"
+            android:layout_alignParentStart="true"
+            android:ellipsize="end"/>
+
+        <TextView
+            android:id="@+id/text_view_opcode_result_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/add"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:maxLines="1"
+            android:layout_alignParentEnd="true"
+            android:ellipsize="end"/>
+
+        <TextView
+            android:id="@+id/text_view_dest_register_result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/text_view_opcode_result"
+            android:text="@string/destination_register"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"/>
+
+        <TextView
+            android:id="@+id/text_view_dest_register_result_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/text_view_opcode_result"
+            android:text="@string/r1_0x0000"
+            android:layout_alignParentEnd="true"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"/>
+
+        <TextView
+            android:id="@+id/text_view_source_register1_result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/text_view_dest_register_result"
+            android:text="@string/source_register_1"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"/>
+
+        <TextView
+            android:id="@+id/text_view_source_register1_result_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/text_view_dest_register_result"
+            android:text="@string/r2_0x0000"
+            android:layout_alignParentEnd="true"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"/>
+
+        <TextView
+            android:id="@+id/text_view_source_register2_result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/text_view_source_register1_result"
+            android:text="@string/source_register_2"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"/>
+
+        <TextView
+            android:id="@+id/text_view_source_register2_result_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/text_view_source_register1_result"
+            android:text="@string/r3_0x0000"
+            android:layout_alignParentEnd="true"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"/>
+
+        <TextView
+            android:id="@+id/text_view_source_instruction_result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/text_view_source_register2_result"
+            android:text="@string/instruction_result_binary"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"/>
+
+        <TextView
+            android:id="@+id/text_view_source_instruction_result_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/text_view_source_register2_result"
+            android:text="@string/_0000x0000x0000x0000"
+            android:layout_alignParentEnd="true"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"/>
+
+
+
+
+
+
+    </RelativeLayout>
+
+
+
+
+</androidx.cardview.widget.CardView>
