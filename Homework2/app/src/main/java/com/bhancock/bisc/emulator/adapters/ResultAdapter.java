@@ -57,11 +57,15 @@ public class ResultAdapter extends ListAdapter<Instruction, ResultAdapter.Result
     public void onBindViewHolder(@NonNull ResultsHolder holder, int position) {
         Instruction currentInstruction = getItem(position);
 
+        String placeholder = currentInstruction.getOpCodeStringRepresentation(Integer.valueOf(currentInstruction.getOpcode()));
+
         holder.textViewOpcodeResult.setText(currentInstruction.getInstructionFormat());
+
+
         holder.textViewDestRegResultValue.setText(currentInstruction.getDestinationRegister() + " 0x000");
         holder.textViewSrc1RegResultValue.setText(currentInstruction.getSourceRegister1() + " 0x001");
         holder.textViewSrc2RegResultValue.setText(currentInstruction.getSourceRegister2() + " 0x010");
-        holder.textViewOpcodeResultValue.setText(currentInstruction.getOpcode());
+        holder.textViewOpcodeResultValue.setText(currentInstruction.getOpCodeStringRepresentation(Integer.valueOf(currentInstruction.getOpcode())));
 
     }
 

@@ -49,14 +49,9 @@ public abstract class InstructionDatabase extends RoomDatabase {
 
         @Override
         protected Void doInBackground(Void... voids) {
-
-
-            instructionDao.insert(new Instruction("RRR-type", "add",
+            instructionDao.insert(new Instruction("r-type", "add",
                     1, "R1", "R2",
                     "R3", -2000, -2000));
-//            instructionDao.insert(new Instruction("RRI-type", "sw"));
-//            instructionDao.insert(new Instruction("RI-type", "jalr"));
-
             return null;
         }
     }

@@ -31,7 +31,6 @@ public class AddOrEditInstructionActivity extends AppCompatActivity {
     private RadioGroup radioGroup;
     private RadioButton radioButton;
 
-    private EditText editTextDescription;
     private NumberPicker instructionNumberPicker;
     private NumberPicker opCodePicker;
 

@@ -2,13 +2,17 @@ package com.bhancock.bisc.emulator.models;
 
 
 
+import android.util.Log;
 import android.util.Pair;
 
 import androidx.room.Entity;
 
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 @Entity(tableName = "instruction_table")
 public class Instruction {
@@ -24,6 +28,9 @@ public class Instruction {
     private String sourceRegister2;
     private int signedImmediate;
     private int immediate;
+
+    @Ignore
+    HashMap<Integer, Pair<String, String>> opcodeMapping = new HashMap<>();
 
 
 
@@ -115,7 +122,6 @@ public class Instruction {
     }
 
     private void populateMapping() {
-        HashMap<Integer, Pair<String, String>> opcodeMapping = new HashMap<>();
         opcodeMapping.put(0, new Pair<>("add", Integer.toBinaryString(1)));
         opcodeMapping.put(1, new Pair<>("addi", Integer.toBinaryString(2)));
         opcodeMapping.put(2, new Pair<>("addiu", Integer.toBinaryString(3)));
@@ -133,6 +139,28 @@ public class Instruction {
         opcodeMapping.put(14, new Pair<>("div", Integer.toBinaryString(15)));
         opcodeMapping.put(15, new Pair<>("divu", Integer.toBinaryString(16)));
         opcodeMapping.put(16, new Pair<>("flash", Integer.toBinaryString(17)));
+        opcodeMapping.put(17, new Pair<>("inc", Integer.toBinaryString(18)));
+        opcodeMapping.put(18, new Pair<>("jmp", Integer.toBinaryString(19)));
+        opcodeMapping.put(19, new Pair<>("lw", Integer.toBinaryString(20)));
+        opcodeMapping.put(20, new Pair<>("lbu", Integer.toBinaryString(21)));
+        opcodeMapping.put(21, new Pair<>("logl", Integer.toBinaryString(22)));
+        opcodeMapping.put(22, new Pair<>("logr", Integer.toBinaryString(23)));
+        opcodeMapping.put(23, new Pair<>("mskla", Integer.toBinaryString(24)));
+        opcodeMapping.put(24, new Pair<>("nmask", Integer.toBinaryString(25)));
+        opcodeMapping.put(25, new Pair<>("mlogo", Integer.toBinaryString(26)));
+        opcodeMapping.put(26, new Pair<>("nor", Integer.toBinaryString(27)));
+        opcodeMapping.put(27, new Pair<>("or", Integer.toBinaryString(28)));
+        opcodeMapping.put(28, new Pair<>("sb", Integer.toBinaryString(29)));
+        opcodeMapping.put(29, new Pair<>("sw", Integer.toBinaryString(30)));
+        opcodeMapping.put(30, new Pair<>("sub", Integer.toBinaryString(31)));
+        opcodeMapping.put(31, new Pair<>("slt", Integer.toBinaryString(32)));
+        opcodeMapping.put(32, new Pair<>("slti", Integer.toBinaryString(33)));
+    }
 
+    public String getOpCodeStringRepresentation(int opcode) {
+        if (opcodeMapping.containsKey(opcode)) {
+            return opcodeMapping.get(opcode).first;
+        }
+        return null;
     }
 }
