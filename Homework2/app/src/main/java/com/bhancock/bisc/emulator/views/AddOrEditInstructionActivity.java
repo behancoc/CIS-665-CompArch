@@ -35,6 +35,13 @@ public class AddOrEditInstructionActivity extends AppCompatActivity {
     private NumberPicker instructionNumberPicker;
     private NumberPicker opCodePicker;
 
+    private String[] opCodeValues = {"add", "addi", "addiu", "and", "andn",
+                                        "beq", "blt", "bgt", "blsr", "bswap", "dec", "csign", "div",
+                                        "divu", "flush", "inc", "jmp", "lw", "lbu",
+                                        "logl", "logr", "mskla", "nmask", "mlogo",
+                                        "nor", "or", "sb", "sw", "sub",
+                                        "slt", "slti",};
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,7 +58,8 @@ public class AddOrEditInstructionActivity extends AppCompatActivity {
         instructionNumberPicker.setMaxValue(10);
 
         opCodePicker.setMinValue(0);
-        opCodePicker.setMaxValue(20);
+        opCodePicker.setMaxValue(opCodeValues.length - 1);
+        opCodePicker.setDisplayedValues(opCodeValues);
 
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_close_24);
 

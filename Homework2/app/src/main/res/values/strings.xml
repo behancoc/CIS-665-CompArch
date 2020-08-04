@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Emulator</string>
+    <string name="instruction_result_binary">Instruction Result (Binary):</string>
+    <string name="opcode">Opcode:</string>
+    <string name="source_register_2">Source Register 2:</string>
+    <string name="source_register_1">Source Register 1:</string>
+    <string name="add">add</string>
+    <string name="destination_register">Destination Register:</string>
+    <string name="_0000x0000x0000x0000">0000x0000x0000x0000</string>
+    <string name="r1_0x0000">*R1 0x0000</string>
+    <string name="r2_0x0000">*R2 0x0000</string>
+    <string name="r3_0x0000">*R3 0x0000</string>
 </resources>
