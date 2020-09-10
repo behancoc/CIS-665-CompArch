@@ -16,9 +16,13 @@ import android.widget.Button;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -63,6 +67,24 @@ public class MainActivity extends AppCompatActivity {
             Uri uri = null;
             if (data != null) {
                 uri = data.getData();
+
+                try {
+                    InputStream inputStream = getContentResolver().openInputStream(uri);
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                    StringBuilder total = new StringBuilder();
+                    for (String line; (line = bufferedReader.readLine()) != null; ) {
+                        total.append(line).append('\n');
+                    }
+
+                    String content = total.toString();
+
+                    Log.d(TAG, "Content: " + content);
+
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
 
                 Log.d(TAG, "Path: " +uri.getEncodedPath());
