@@ -2,15 +2,15 @@ package com.bhancock.pipelinedecoderapp.model;
 
 import android.content.Context;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.Enumeration;
+import java.util.Hashtable;
+
 
 public class InstructionCache {
 
     private static InstructionCache sInstructionCache = null;
 
-    private List<Instruction> mInstructions;
+    private Hashtable<Integer, Instruction> mInstructionsHashTable;
 
     public static InstructionCache getInstance(Context context) {
         if (sInstructionCache == null) {
@@ -20,19 +20,16 @@ public class InstructionCache {
     }
 
     private InstructionCache(Context context) {
-        mInstructions = new ArrayList<>();
+        mInstructionsHashTable = new Hashtable<Integer, Instruction>();
     }
 
-    public List<Instruction> getInstructions() {
-        return mInstructions;
+    public Enumeration<Instruction> getInstructions() {
+        Enumeration<Instruction> values = mInstructionsHashTable.elements();
+        return values;
     }
 
     public Instruction getInstruction(Integer instructionNumber) {
-        for (Instruction instruction: mInstructions) {
-            if (instruction.getInstructionNumber().equals(instructionNumber)) {
-                return instruction;
-            }
-        }
-        return null;
+        return mInstructionsHashTable.get(instructionNumber);
+
     }
 }
