@@ -61,4 +61,60 @@ public class Instruction {
     public void setInstructionNumber(Integer instructionNumber) {
         this.instructionNumber = instructionNumber;
     }
+
+    public int getImmediate() {
+        return immediate;
+    }
+
+    public void setImmediate(int immediate) {
+        this.immediate = immediate;
+    }
+
+    public String getSourceRegister1() {
+        return sourceRegister1;
+    }
+
+    public void setSourceRegister1(String sourceRegister1) {
+        this.sourceRegister1 = sourceRegister1;
+    }
+
+    public String getSourceRegister2() {
+        return sourceRegister2;
+    }
+
+    public void setSourceRegister2(String sourceRegister2) {
+        this.sourceRegister2 = sourceRegister2;
+    }
+
+    public String getDestinationRegister() {
+        return destinationRegister;
+    }
+
+    public void setDestinationRegister(String destinationRegister) {
+        this.destinationRegister = destinationRegister;
+    }
+
+    public int getOffset() {
+        return offset;
+    }
+
+    public void setOffset(int offset) {
+        this.offset = offset;
+    }
+
+    public String getBaseAddress() {
+        return baseAddress;
+    }
+
+    public void setBaseAddress(String baseAddress) {
+        this.baseAddress = baseAddress;
+    }
+
+    public String getOperation() {
+        return operation;
+    }
+
+    public void setOperation(String operation) {
+        this.operation = operation;
+    }
 }
