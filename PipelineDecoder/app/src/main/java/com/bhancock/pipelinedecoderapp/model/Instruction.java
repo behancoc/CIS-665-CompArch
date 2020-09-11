@@ -2,6 +2,7 @@ package com.bhancock.pipelinedecoderapp.model;
 
 public class Instruction {
 
+    private int instructionNumber;
     private String operation;
     private String sourceRegister1;
     private String sourceRegister2;
@@ -9,6 +10,7 @@ public class Instruction {
     private String baseAddress;
     private int immediate;
     private int offset;
+
 
 
     /**
@@ -25,7 +27,8 @@ public class Instruction {
      * @param offset
      * @param baseAddress
      */
-    public Instruction(String operation, int offset, String baseAddress) {
+    public Instruction(int instructionNumber, String operation, int offset, String baseAddress) {
+        this.instructionNumber = instructionNumber;
         this.operation = operation;
         this.offset = offset;
         this.baseAddress = baseAddress;
@@ -38,12 +41,22 @@ public class Instruction {
      * @param sourceRegister1
      * @param sourceRegister2
      */
-    public Instruction(String operation, String destinationRegister,
+    public Instruction(int instructionNumber, String operation, String destinationRegister,
                        String sourceRegister1, String sourceRegister2) {
 
+        this.instructionNumber = instructionNumber;
         this.operation = operation;
         this.destinationRegister = destinationRegister;
         this.sourceRegister1 = sourceRegister1;
         this.sourceRegister2 = sourceRegister2;
+    }
+
+
+    public int getInstructionNumber() {
+        return instructionNumber;
+    }
+
+    public void setInstructionNumber(int instructionNumber) {
+        this.instructionNumber = instructionNumber;
     }
 }
