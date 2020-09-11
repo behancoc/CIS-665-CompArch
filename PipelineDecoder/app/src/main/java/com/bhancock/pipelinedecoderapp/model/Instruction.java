@@ -29,9 +29,10 @@ public class Instruction {
      * @param offset
      * @param baseAddress
      */
-    public Instruction(Integer instructionNumber, String operation, int offset, String baseAddress) {
+    public Instruction(Integer instructionNumber, String operation, String destinationRegister, int offset, String baseAddress) {
         this.instructionNumber = instructionNumber;
         this.operation = operation;
+        this.destinationRegister = destinationRegister;
         this.offset = offset;
         this.baseAddress = baseAddress;
     }
