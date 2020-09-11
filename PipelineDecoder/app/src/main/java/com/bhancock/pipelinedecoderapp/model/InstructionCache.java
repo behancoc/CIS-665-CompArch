@@ -32,4 +32,8 @@ public class InstructionCache {
         return mInstructionsHashTable.get(instructionNumber);
 
     }
+
+    public void addInstruction(Integer key, Instruction instruction) {
+        mInstructionsHashTable.put(key, instruction);
+    }
 }
