@@ -167,20 +167,10 @@ public class MainActivity extends AppCompatActivity {
                 //We're no longer on the first instruction here...
                 //Current Instruction
                 int currentInstructionNumber = instruction.getInstructionNumber();
-                String currentOperand = instruction.getOperand();
-                String destReg = instruction.getDestinationRegister();
-                String currentSourceReg1 = instruction.getSourceRegister1();
-                String currentSourceReg2 = instruction.getSourceRegister2();
-
 
                 //Previous Instruction
                 int previousInstructionNumber = instructionCache.getInstruction(currentInstructionNumber - 1).getInstructionNumber();
                 Instruction previousInstruction = instructionCache.getInstruction(currentInstructionNumber - 1);
-
-                String prevOperand = instructionCache.getInstruction(previousInstructionNumber).getOperand();
-                String prevDestReg = instructionCache.getInstruction(previousInstructionNumber).getDestinationRegister();
-                String prevSource1Reg = instructionCache.getInstruction(previousInstructionNumber).getSourceRegister1();
-                String prevSource2Reg = instructionCache.getInstruction(previousInstructionNumber).getSourceRegister2();
 
 
                 if(dataDependencyCheck(instruction, previousInstruction)) {
@@ -192,7 +182,6 @@ public class MainActivity extends AppCompatActivity {
 
                 //TODO: Create method to check for structural hazards
                 //TODO: Create method to check for control hazards (if we decide to do branch)
-
 
             }
         }
@@ -212,7 +201,9 @@ public class MainActivity extends AppCompatActivity {
             currentInstructionSourceReg2.equalsIgnoreCase(previousInstructionDestinationRegister)) {
 
 
+            //THIS IS THE TRUE DEPENDENCE > FOCUS ON THIS SPECIFIC CASE FIRST!
             Log.d(TAG, "POSSIBLE READ AFTER WRITE (RAW) DATA DEPENDENCY!");
+
             return true;
 
         } else if (currentInstructionDestinationRegister.equalsIgnoreCase(previousInstructionDestinationRegister)) {
