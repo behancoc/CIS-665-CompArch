@@ -24,6 +24,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
@@ -32,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int OPEN_DOCUMENT_REQUEST_CODE = 1;
     private boolean forwardingEnabled = false;
     private int cycle = 0;
+    private int instructionFeed = 1;
+    private Uri uri = null;
 
     InstructionCache instructionCache = InstructionCache.getInstance(getApplicationContext());
     HashMap<String, Instruction.SEGMENT> segmentMapping = new HashMap();
@@ -75,7 +78,9 @@ public class MainActivity extends AppCompatActivity {
         run.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO: RUN PROGRAM HERE
+//                if(uri == null) {
+//                    Toast.makeText(getApplicationContext(),"Unable to find text file", Toast.LENGTH_SHORT).show();
+//                }
             }
         });
     }
@@ -86,7 +91,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == OPEN_DOCUMENT_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            Uri uri = null;
             if (data != null) {
                 uri = data.getData();
 
@@ -171,51 +175,17 @@ public class MainActivity extends AppCompatActivity {
 
                 //Previous Instruction
                 int previousInstructionNumber = instructionCache.getInstruction(currentInstructionNumber - 1).getInstructionNumber();
+                Instruction previousInstruction = instructionCache.getInstruction(currentInstructionNumber - 1);
+
                 String prevOperand = instructionCache.getInstruction(previousInstructionNumber).getOperand();
                 String prevDestReg = instructionCache.getInstruction(previousInstructionNumber).getDestinationRegister();
                 String prevSource1Reg = instructionCache.getInstruction(previousInstructionNumber).getSourceRegister1();
                 String prevSource2Reg = instructionCache.getInstruction(previousInstructionNumber).getSourceRegister2();
 
-                Instruction.SEGMENT prevInstructionRegisterAvailability = null;
 
-                try {
-                    prevInstructionRegisterAvailability = instructionCache
-                            .getInstruction(previousInstructionNumber)
-                            .getRegisterAvailability();
-
-                } catch (NullPointerException e) {
-                    e.printStackTrace();
+                if(dataDependencyCheck(instruction, previousInstruction)) {
+                    //Determine number of stalls...
                 }
-
-
-                //Check for Data Hazards now that we have current instruction and previous instruction
-                //Remember... need to check instructions prior to prev instructions as cycle count increases
-                //TODO: Create method to check for data hazards
-
-                if(prevDestReg.equalsIgnoreCase(currentSourceReg1) ||
-                        prevDestReg.equalsIgnoreCase(currentSourceReg2)) {
-
-                    //WHEN IS THIS REGISTER REQUIRED IN THE PIPELINE SEGMENT?
-                    if(currentOperand.equalsIgnoreCase("ADD") ||
-                        currentOperand.equalsIgnoreCase("SUB")) {
-                        instructionCache.getInstruction(currentInstructionNumber).setRegisterRequired(Instruction.SEGMENT.DECODE);          //We know that both will require Register at DECODE
-                        instructionCache.getInstruction(currentInstructionNumber).setRegisterAvailability(Instruction.SEGMENT.WRITE_BACK);  //We know that for both operands, they won't be available until write back stage
-                    }
-
-
-                    //WHEN WAS THE PREVIOUS DEST REGISTER FOR THE PREVIOUS INSTRUCTION AVAILABLE?
-
-                    //WE NEED TO CHECK FOR A DATA HAZARD!!!!
-                    if(prevInstructionRegisterAvailability != null) {
-                        if(!prevInstructionRegisterAvailability.equals(instructionCache.getInstruction(currentInstructionNumber).getRegisterRequired())) {
-                            //DATA HAZARD OCCURRED... NEED TO STALL
-
-                            //TODO: Determine how to handle stalls (calulation)
-                        }
-                    }
-                }
-
-
 
 
 
@@ -228,6 +198,83 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private boolean dataDependencyCheck(Instruction currentInstruction, Instruction previousInstruction) {
+        String currentInstructionDestinationRegister = currentInstruction.getDestinationRegister();
+        String currentInstructionSourceReg1 = currentInstruction.getSourceRegister1();
+        String currentInstructionSourceReg2 = currentInstruction.getSourceRegister2();
+
+
+        String previousInstructionDestinationRegister = previousInstruction.getDestinationRegister();
+        String previousInstructionSourceReg1 = previousInstruction.getSourceRegister1();
+        String previousInstructionSourceReg2 = previousInstruction.getSourceRegister2();
+
+        if(currentInstructionSourceReg1.equalsIgnoreCase(previousInstructionDestinationRegister) ||
+            currentInstructionSourceReg2.equalsIgnoreCase(previousInstructionDestinationRegister)) {
+
+
+            Log.d(TAG, "POSSIBLE READ AFTER WRITE (RAW) DATA DEPENDENCY!");
+            return true;
+
+        } else if (currentInstructionDestinationRegister.equalsIgnoreCase(previousInstructionDestinationRegister)) {
+
+            Log.d(TAG, "POSSIBLE WRITE AFTER WRITE (WAR) DATA DEPENDENCY!");
+            return true;
+
+        } else if (currentInstructionDestinationRegister.equalsIgnoreCase(previousInstructionSourceReg1) ||
+                   currentInstructionDestinationRegister.equalsIgnoreCase(previousInstructionSourceReg2)) {
+            Log.d(TAG, "POSSIBLE WRITE AFTER READ (RAW) DATA DEPENDENCY!");
+            return true;
+
+        }
+        else {
+            return false;
+        }
+    }
+
+
+    private int determineNumberOfStalls(Instruction currentInstruction, Instruction previousInstruction) {
+
+        ArrayList<Instruction.SEGMENT> currentInstructionTiming= new ArrayList<>();
+
+
+
+        String currentInstructionOperand = currentInstruction.getOperand();
+        String currentInstructionDestinationRegister = currentInstruction.getDestinationRegister();
+        String currentInstructionSourceReg1 = currentInstruction.getSourceRegister1();
+        String currentInstructionSourceReg2 = currentInstruction.getSourceRegister2();
+
+        String previousInstructionOperand = previousInstruction.getOperand();
+        String previousInstructionDestinationRegister = previousInstruction.getDestinationRegister();
+        String previousInstructionSourceReg1 = previousInstruction.getSourceRegister1();
+        String previousInstructionSourceReg2 = previousInstruction.getSourceRegister2();
+
+        if(currentInstruction.getOperand().equalsIgnoreCase("ADD") ||
+           currentInstruction.getOperand().equalsIgnoreCase("SUB")) {
+
+            int currentInstructionNumber = currentInstruction.getInstructionNumber();
+
+            //WHEN DOES THIS INSTRUCTION NEED THE PREVIOUS INSTRUCTIONS DESTINATION REGISTER IN THE PIPELINE?
+            //FOR AND & SUB OPERANDS... IT IS NEEDED BY THE DECODE STAGE
+            currentInstruction.setRegisterRequired(Instruction.SEGMENT.DECODE);
+
+
+            //WHEN IS THE EARLIEST THIS INSTRUCTION'S DESTINATION REGISTER AVAILABLE FOR FUTURE INSTRUCTIONS?
+            //FOR ADN & SUB OPERANDS... IT IS IN THE WRITE_BACK STAGE WHEN NO-FORWARDING UNIT IS PRESENT
+            //UPDATE CACHE TO REFLECT THIS!
+            instructionCache.getInstruction(currentInstructionNumber).setRegisterAvailability(Instruction.SEGMENT.WRITE_BACK);
+
+        }
+
+
+        currentInstruction.getRegisterAvailability().getValue();
+
+        //TODO:  HANDLE LW & SW HERE
+
+
+
+        return 0;
+    }
+
     /**
      *
      * @return number of stalls
@@ -237,7 +284,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void printToConsole() {
+
+    public void printToConsole(Instruction instruction) {
 
     }
 
