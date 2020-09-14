@@ -6,11 +6,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -22,14 +20,11 @@ import com.bhancock.pipelinedecoderapp.model.Instruction;
 import com.bhancock.pipelinedecoderapp.model.InstructionCache;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -39,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     private int cycle = 0;
 
     InstructionCache instructionCache = InstructionCache.getInstance(getApplicationContext());
+    HashMap<String, Instruction.SEGMENT> segmentMapping = new HashMap();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,31 +147,78 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (!forwardingEnabled) {
-            //TODO: Handle not forwarding pipelining scenario
-
             if (instruction.getInstructionNumber() == 1) {
                 cycle = 1;
+
+                if(instruction.getOperand().equalsIgnoreCase("ADD") ||
+                        instruction.getOperand().equalsIgnoreCase("SUB")) {
+                    instructionCache.getInstruction(1).setRegisterAvailability(Instruction.SEGMENT.WRITE_BACK);
+                }
+                //TODO: HANDLE LW & SW situation
                 //TODO:  We know this is first instruction.... display output to screen
 
 
             } else {
 
+                //We're no longer on the first instruction here...
                 //Current Instruction
                 int currentInstructionNumber = instruction.getInstructionNumber();
-                String operand = instruction.getOperation();
+                String currentOperand = instruction.getOperand();
                 String destReg = instruction.getDestinationRegister();
+                String currentSourceReg1 = instruction.getSourceRegister1();
+                String currentSourceReg2 = instruction.getSourceRegister2();
 
 
                 //Previous Instruction
                 int previousInstructionNumber = instructionCache.getInstruction(currentInstructionNumber - 1).getInstructionNumber();
-                String prevOperand = instructionCache.getInstruction(previousInstructionNumber).getOperation();
+                String prevOperand = instructionCache.getInstruction(previousInstructionNumber).getOperand();
                 String prevDestReg = instructionCache.getInstruction(previousInstructionNumber).getDestinationRegister();
                 String prevSource1Reg = instructionCache.getInstruction(previousInstructionNumber).getSourceRegister1();
                 String prevSource2Reg = instructionCache.getInstruction(previousInstructionNumber).getSourceRegister2();
 
+                Instruction.SEGMENT prevInstructionRegisterAvailability = null;
+
+                try {
+                    prevInstructionRegisterAvailability = instructionCache
+                            .getInstruction(previousInstructionNumber)
+                            .getRegisterAvailability();
+
+                } catch (NullPointerException e) {
+                    e.printStackTrace();
+                }
+
+
                 //Check for Data Hazards now that we have current instruction and previous instruction
                 //Remember... need to check instructions prior to prev instructions as cycle count increases
                 //TODO: Create method to check for data hazards
+
+                if(prevDestReg.equalsIgnoreCase(currentSourceReg1) ||
+                        prevDestReg.equalsIgnoreCase(currentSourceReg2)) {
+
+                    //WHEN IS THIS REGISTER REQUIRED IN THE PIPELINE SEGMENT?
+                    if(currentOperand.equalsIgnoreCase("ADD") ||
+                        currentOperand.equalsIgnoreCase("SUB")) {
+                        instructionCache.getInstruction(currentInstructionNumber).setRegisterRequired(Instruction.SEGMENT.DECODE);          //We know that both will require Register at DECODE
+                        instructionCache.getInstruction(currentInstructionNumber).setRegisterAvailability(Instruction.SEGMENT.WRITE_BACK);  //We know that for both operands, they won't be available until write back stage
+                    }
+
+
+                    //WHEN WAS THE PREVIOUS DEST REGISTER FOR THE PREVIOUS INSTRUCTION AVAILABLE?
+
+                    //WE NEED TO CHECK FOR A DATA HAZARD!!!!
+                    if(prevInstructionRegisterAvailability != null) {
+                        if(!prevInstructionRegisterAvailability.equals(instructionCache.getInstruction(currentInstructionNumber).getRegisterRequired())) {
+                            //DATA HAZARD OCCURRED... NEED TO STALL
+
+                            //TODO: Determine how to handle stalls (calulation)
+                        }
+                    }
+                }
+
+
+
+
+
 
                 //TODO: Create method to check for structural hazards
                 //TODO: Create method to check for control hazards (if we decide to do branch)
