@@ -54,6 +54,14 @@ public class Instruction {
         this.sourceRegister2 = sourceRegister2;
     }
 
+    public Instruction(int instructionNumber, String operation, String destinationRegister, String sourceRegister1, int immediate) {
+        this.instructionNumber = instructionNumber;
+        this.operation = operation;
+        this.destinationRegister = destinationRegister;
+        this.sourceRegister1 = sourceRegister1;
+        this.immediate = immediate;
+    }
+
 
     public Integer getInstructionNumber() {
         return instructionNumber;
