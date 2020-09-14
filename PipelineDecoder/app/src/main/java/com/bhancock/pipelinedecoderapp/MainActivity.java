@@ -25,19 +25,30 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Formatter;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int OPEN_DOCUMENT_REQUEST_CODE = 1;
+
     private boolean forwardingEnabled = false;
     private int cycle = 0;
     private int instructionFeed = 1;
     private Uri uri = null;
 
-    InstructionCache instructionCache = InstructionCache.getInstance(getApplicationContext());
+    InstructionCache instructionCache;
     HashMap<String, Instruction.SEGMENT> segmentMapping = new HashMap();
+
+
+    public enum DATA_DEPENDENCY  {
+            READ_AFTER_WRITE,
+            WRITE_AFTER_WRITE,
+            WRITE_AFTER_READ,
+            NONE;
+    }
 
 
     @Override
@@ -45,9 +56,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+        instructionCache = InstructionCache.getInstance(getApplicationContext());
         Switch forwardingSwitch = findViewById(R.id.forwarding_switch);
         Button openFile = findViewById(R.id.open_file);
         Button run = findViewById(R.id.open_file);
+
+
 
 
         forwardingSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -75,15 +90,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        run.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                if(uri == null) {
-//                    Toast.makeText(getApplicationContext(),"Unable to find text file", Toast.LENGTH_SHORT).show();
-//                }
-            }
-        });
+//        run.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+////                if(uri == null) {
+////                    Toast.makeText(getApplicationContext(),"Unable to find text file", Toast.LENGTH_SHORT).show();
+////                }
+//            }
+//        });
+
+
     }
+
 
 
 
@@ -104,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
 
                     String content = total.toString();
 
-                    Log.d(TAG, "Content: " +  "\n" + content);
+                    Log.d(TAG, "Content: " + "\n" + content);
 
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
@@ -113,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
 
-                Log.d(TAG, "Path: " +uri.getEncodedPath());
+                Log.d(TAG, "Path: " + uri.getEncodedPath());
 
                 //TODO: READ DATA FROM FILE AND POPULATE INSTRUCTIONS:
 
@@ -127,7 +145,6 @@ public class MainActivity extends AppCompatActivity {
                 Instruction eighthInstruction = new Instruction(8, "ADD", "S0", "S0", 1);
 
 
-
                 instructionCache.addInstruction(1, firstInstruction);
                 instructionCache.addInstruction(2, secondInstruction);
                 instructionCache.addInstruction(3, thirdInstruction);
@@ -138,6 +155,12 @@ public class MainActivity extends AppCompatActivity {
                 instructionCache.addInstruction(8, eighthInstruction);
 
 
+                Enumeration<Instruction> enumeration = instructionCache.getInstructions();
+
+//                while(enumeration.hasMoreElements()) {
+//                    executePipeline(enumeration.nextElement());
+//                }
+                executePipeline(firstInstruction);
 
             }
         }
@@ -146,48 +169,75 @@ public class MainActivity extends AppCompatActivity {
 
     public void executePipeline(@NonNull Instruction instruction) {
 
+        ArrayList<Instruction.SEGMENT> instructionPipeline = new ArrayList<>();
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append(instruction.getOperand());
+        stringBuilder.append(" ");
+        stringBuilder.append(instruction.getOffset());
+
+        for(int i = 0; i < 5; i++) {
+
+
+            stringBuilder.append("|");
+            stringBuilder.append(Instruction.SEGMENT.valueOf(i).toString());
+            stringBuilder.append("|");
+//            Log.d(TAG ,  Instruction.SEGMENT.valueOf(i).toString());
+
+            instructionPipeline.add(i, Instruction.SEGMENT.valueOf(i));
+        }
+
+        Log.d(TAG, stringBuilder.toString());
+
+
+
+
+
+
+
+
+
+
         if (forwardingEnabled) {
             //TODO: Handle forwarding pipelining scenario
         }
 
-        if (!forwardingEnabled) {
-            if (instruction.getInstructionNumber() == 1) {
-                cycle = 1;
-
-                if(instruction.getOperand().equalsIgnoreCase("ADD") ||
-                        instruction.getOperand().equalsIgnoreCase("SUB")) {
-                    instructionCache.getInstruction(1).setRegisterAvailability(Instruction.SEGMENT.WRITE_BACK);
-                }
-                //TODO: HANDLE LW & SW situation
-                //TODO:  We know this is first instruction.... display output to screen
-
-
-            } else {
-
-                //We're no longer on the first instruction here...
-                //Current Instruction
-                int currentInstructionNumber = instruction.getInstructionNumber();
-
-                //Previous Instruction
-                int previousInstructionNumber = instructionCache.getInstruction(currentInstructionNumber - 1).getInstructionNumber();
-                Instruction previousInstruction = instructionCache.getInstruction(currentInstructionNumber - 1);
-
-
-                if(dataDependencyCheck(instruction, previousInstruction)) {
-                    //Determine number of stalls...
-                }
-
-
-
-
-                //TODO: Create method to check for structural hazards
-                //TODO: Create method to check for control hazards (if we decide to do branch)
-
-            }
-        }
+//        if (!forwardingEnabled) {
+//            if (instruction.getInstructionNumber() == 1) {
+//
+//
+//
+//
+//            } else {
+//
+//                //We're no longer on the first instruction here...
+//                //Current Instruction
+//                int currentInstructionNumber = instruction.getInstructionNumber();
+//
+//                //Previous Instruction
+//                int previousInstructionNumber = instructionCache.getInstruction(currentInstructionNumber - 1).getInstructionNumber();
+//                Instruction previousInstruction = instructionCache.getInstruction(currentInstructionNumber - 1);
+//
+//
+//                if (dataDependencyCheck(instruction, previousInstruction) != DATA_DEPENDENCY.NONE) {
+//                    //REPLACE WITH SWITCH STATEMENT EVENTUALLY?
+//
+//                    if (dataDependencyCheck(instruction, previousInstruction) == DATA_DEPENDENCY.READ_AFTER_WRITE) {
+//                        determineNumberOfStalls(forwardingEnabled, instruction, previousInstruction);
+//                    }
+//                }
+//
+//
+//
+//
+//                //TODO: Create method to check for structural hazards
+//                //TODO: Create method to check for control hazards (if we decide to do branch)
+//
+//            }
+//        }
     }
 
-    private boolean dataDependencyCheck(Instruction currentInstruction, Instruction previousInstruction) {
+    private DATA_DEPENDENCY dataDependencyCheck(Instruction currentInstruction, Instruction previousInstruction) {
         String currentInstructionDestinationRegister = currentInstruction.getDestinationRegister();
         String currentInstructionSourceReg1 = currentInstruction.getSourceRegister1();
         String currentInstructionSourceReg2 = currentInstruction.getSourceRegister2();
@@ -204,79 +254,123 @@ public class MainActivity extends AppCompatActivity {
             //THIS IS THE TRUE DEPENDENCE > FOCUS ON THIS SPECIFIC CASE FIRST!
             Log.d(TAG, "POSSIBLE READ AFTER WRITE (RAW) DATA DEPENDENCY!");
 
-            return true;
+            return DATA_DEPENDENCY.READ_AFTER_WRITE;
 
         } else if (currentInstructionDestinationRegister.equalsIgnoreCase(previousInstructionDestinationRegister)) {
 
-            Log.d(TAG, "POSSIBLE WRITE AFTER WRITE (WAR) DATA DEPENDENCY!");
-            return true;
+            Log.d(TAG, "POSSIBLE WRITE AFTER WRITE (WAW) DATA DEPENDENCY!");
+            return DATA_DEPENDENCY.WRITE_AFTER_WRITE;
 
         } else if (currentInstructionDestinationRegister.equalsIgnoreCase(previousInstructionSourceReg1) ||
                    currentInstructionDestinationRegister.equalsIgnoreCase(previousInstructionSourceReg2)) {
-            Log.d(TAG, "POSSIBLE WRITE AFTER READ (RAW) DATA DEPENDENCY!");
-            return true;
+            Log.d(TAG, "POSSIBLE WRITE AFTER READ (WAR) DATA DEPENDENCY!");
+            return DATA_DEPENDENCY.WRITE_AFTER_READ;
 
         }
         else {
-            return false;
+            return DATA_DEPENDENCY.NONE;
         }
     }
 
 
-    private int determineNumberOfStalls(Instruction currentInstruction, Instruction previousInstruction) {
+    private int determineNumberOfStalls(Boolean forwarding, Instruction currentInstruction, Instruction previousInstruction) {
 
-        ArrayList<Instruction.SEGMENT> currentInstructionTiming= new ArrayList<>();
+        ArrayList<Instruction.SEGMENT> instructionPipeline = new ArrayList<>();
 
+        currentInstruction = instructionCache.getInstruction(2);
 
-
-        String currentInstructionOperand = currentInstruction.getOperand();
-        String currentInstructionDestinationRegister = currentInstruction.getDestinationRegister();
-        String currentInstructionSourceReg1 = currentInstruction.getSourceRegister1();
-        String currentInstructionSourceReg2 = currentInstruction.getSourceRegister2();
-
-        String previousInstructionOperand = previousInstruction.getOperand();
-        String previousInstructionDestinationRegister = previousInstruction.getDestinationRegister();
-        String previousInstructionSourceReg1 = previousInstruction.getSourceRegister1();
-        String previousInstructionSourceReg2 = previousInstruction.getSourceRegister2();
-
-        if(currentInstruction.getOperand().equalsIgnoreCase("ADD") ||
-           currentInstruction.getOperand().equalsIgnoreCase("SUB")) {
-
-            int currentInstructionNumber = currentInstruction.getInstructionNumber();
-
-            //WHEN DOES THIS INSTRUCTION NEED THE PREVIOUS INSTRUCTIONS DESTINATION REGISTER IN THE PIPELINE?
-            //FOR AND & SUB OPERANDS... IT IS NEEDED BY THE DECODE STAGE
-            currentInstruction.setRegisterRequired(Instruction.SEGMENT.DECODE);
-
-
-            //WHEN IS THE EARLIEST THIS INSTRUCTION'S DESTINATION REGISTER AVAILABLE FOR FUTURE INSTRUCTIONS?
-            //FOR ADN & SUB OPERANDS... IT IS IN THE WRITE_BACK STAGE WHEN NO-FORWARDING UNIT IS PRESENT
-            //UPDATE CACHE TO REFLECT THIS!
-            instructionCache.getInstruction(currentInstructionNumber).setRegisterAvailability(Instruction.SEGMENT.WRITE_BACK);
-
+        for(int i = 0; i < 5; i++) {
+            Log.d(TAG ,  "Sanity check: " + Instruction.SEGMENT.valueOf(i));
+            instructionPipeline.add(i, Instruction.SEGMENT.valueOf(i));
         }
 
 
-        currentInstruction.getRegisterAvailability().getValue();
 
-        //TODO:  HANDLE LW & SW HERE
+        Instruction.SEGMENT stagePrevInstRegAvailable = previousInstruction.getRegisterAvailability();
+        Instruction.SEGMENT stageCurInstructionRegRequired = currentInstruction.getRegisterRequired();
 
 
+        if (forwarding) {
+
+        }
+
+        if (!forwarding) {
+
+        }
 
         return 0;
     }
 
-    /**
-     *
-     * @return number of stalls
-     */
-    public int detectDataHazards() {
-        return 0;
-    }
+    private void determineRegisterAvailability(boolean forwardingEnabled, Instruction instruction) {
+        if(forwardingEnabled) {
+            if (instruction.getOperand().equalsIgnoreCase("ADD")) {
+                instructionCache.getInstruction(instruction.getInstructionNumber()).setRegisterAvailability(Instruction.SEGMENT.EXECUTE);
+            }
 
+            if (instruction.getOperand().equalsIgnoreCase("SUB")) {
+                instructionCache.getInstruction(instruction.getInstructionNumber()).setRegisterAvailability(Instruction.SEGMENT.EXECUTE);
+            }
+
+            if (instruction.getOperand().equalsIgnoreCase("AND")) {
+                instructionCache.getInstruction(instruction.getInstructionNumber()).setRegisterAvailability(Instruction.SEGMENT.EXECUTE);
+            }
+
+            if (instruction.getOperand().equalsIgnoreCase("OR")) {
+                instructionCache.getInstruction(instruction.getInstructionNumber()).setRegisterAvailability(Instruction.SEGMENT.EXECUTE);
+            }
+
+            if(instruction.getOperand().equalsIgnoreCase("LW")) {
+
+                //DOUBLE CHECK THIS......
+                instructionCache.getInstruction(instruction.getInstructionNumber()).setRegisterAvailability(Instruction.SEGMENT.MEMORY);
+            }
+
+            if(instruction.getOperand().equalsIgnoreCase("SW")) {
+                //DOUBLE CHECK THIS...... ALSO....
+                instructionCache.getInstruction(instruction.getInstructionNumber()).setRegisterAvailability(Instruction.SEGMENT.MEMORY);
+            }
+
+
+        }
+
+        if(!forwardingEnabled) {
+            if (instruction.getOperand().equalsIgnoreCase("ADD")) {
+                instructionCache.getInstruction(instruction.getInstructionNumber()).setRegisterAvailability(Instruction.SEGMENT.WRITE_BACK);
+            }
+
+            if (instruction.getOperand().equalsIgnoreCase("SUB")) {
+                instructionCache.getInstruction(instruction.getInstructionNumber()).setRegisterAvailability(Instruction.SEGMENT.WRITE_BACK);
+            }
+
+            if (instruction.getOperand().equalsIgnoreCase("AND")) {
+
+                //DOUBLE CHECK THIS......
+                instructionCache.getInstruction(instruction.getInstructionNumber()).setRegisterAvailability(Instruction.SEGMENT.EXECUTE);
+            }
+
+            if (instruction.getOperand().equalsIgnoreCase("OR")) {
+
+                //DOUBLE CHECK THIS......
+                instructionCache.getInstruction(instruction.getInstructionNumber()).setRegisterAvailability(Instruction.SEGMENT.EXECUTE);
+            }
+
+            if(instruction.getOperand().equalsIgnoreCase("LW")) {
+
+                //DOUBLE CHECK THIS......
+                instructionCache.getInstruction(instruction.getInstructionNumber()).setRegisterAvailability(Instruction.SEGMENT.MEMORY);
+            }
+
+            if(instruction.getOperand().equalsIgnoreCase("SW")) {
+                //DOUBLE CHECK THIS...... ALSO....
+                instructionCache.getInstruction(instruction.getInstructionNumber()).setRegisterAvailability(Instruction.SEGMENT.WRITE_BACK);
+            }
+        }
+
+    }
 
 
     public void printToConsole(Instruction instruction) {
+
 
     }
 

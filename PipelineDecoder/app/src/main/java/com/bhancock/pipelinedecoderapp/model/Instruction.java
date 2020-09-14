@@ -17,11 +17,11 @@ public class Instruction {
     private SEGMENT registerRequired;
 
     public enum SEGMENT {
-        FETCH(1),
-        DECODE(2),
-        EXECUTE(3),
-        MEMORY(4),
-        WRITE_BACK(5);
+        FETCH(0),
+        DECODE(1),
+        EXECUTE(2),
+        MEMORY(3),
+        WRITE_BACK(4);
 
         private int value;
         private static Map map = new HashMap<>();
