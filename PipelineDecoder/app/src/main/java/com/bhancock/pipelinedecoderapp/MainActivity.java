@@ -421,48 +421,47 @@ public class MainActivity extends AppCompatActivity {
 
     public void constructPipelineSequence(Instruction instruction, int stallsRequired) {
 
-
-
-        pipelineSequence.add((new ArrayList<Instruction.SEGMENT>(Arrays.asList(Instruction.SEGMENT.FETCH,
-                Instruction.SEGMENT.DECODE,
-                Instruction.SEGMENT.EXECUTE,
-                Instruction.SEGMENT.MEMORY,
-                Instruction.SEGMENT.WRITE_BACK))));
-
-
-        int index = instruction.getInstructionNumber() - 1;
-
-        int stallCounter = stallsRequired;
-        int cycleIndex = 1;
-
-
-
-
-
-        if (stallsRequired == 0) {
-            pipelineSequence.add(index, new ArrayList<Instruction.SEGMENT>(Arrays.asList(Instruction.SEGMENT.FETCH,
+        if (instruction.getInstructionNumber() == 1) {
+            pipelineSequence.add((new ArrayList<Instruction.SEGMENT>(Arrays.asList(Instruction.SEGMENT.FETCH,
                     Instruction.SEGMENT.DECODE,
                     Instruction.SEGMENT.EXECUTE,
                     Instruction.SEGMENT.MEMORY,
-                    Instruction.SEGMENT.WRITE_BACK)));
+                    Instruction.SEGMENT.WRITE_BACK))));
         }
 
-        if (stallsRequired != 0) {
-            pipelineSequence.add(index, new ArrayList<Instruction.SEGMENT>(Arrays.asList(Instruction.SEGMENT.FETCH)));
-            while (stallCounter != 0) {
-                pipelineSequence.get(index).add(cycleIndex, Instruction.SEGMENT.STALL);
-                stallCounter --;
-                cycleIndex ++;
+        try {
+            int index = instruction.getInstructionNumber() - 1;
+
+            int stallCounter = stallsRequired;
+            int cycleIndex = 1;
+
+
+            if (stallsRequired == 0) {
+                pipelineSequence.add(index, new ArrayList<Instruction.SEGMENT>(Arrays.asList(Instruction.SEGMENT.FETCH,
+                        Instruction.SEGMENT.DECODE,
+                        Instruction.SEGMENT.EXECUTE,
+                        Instruction.SEGMENT.MEMORY,
+                        Instruction.SEGMENT.WRITE_BACK)));
             }
 
+            if (stallsRequired != 0) {
+                pipelineSequence.add(index, new ArrayList<Instruction.SEGMENT>(Arrays.asList(Instruction.SEGMENT.FETCH)));
+                while (stallCounter != 0) {
+                    pipelineSequence.get(index).add(cycleIndex, Instruction.SEGMENT.STALL);
+                    stallCounter --;
+                    cycleIndex ++;
+                }
 
-            for(int i = 1; i < 5; i ++) {
-                pipelineSequence.get(index).add(cycleIndex, Instruction.SEGMENT.valueOf(i));
-                cycleIndex++;
+
+                for(int i = 1; i < 5; i ++) {
+                    pipelineSequence.get(index).add(cycleIndex, Instruction.SEGMENT.valueOf(i));
+                    cycleIndex++;
+                }
             }
 
-//            pipelineSequence.get(index).add(, );
-
+        } catch (Exception e) {
+            e.getMessage();
+            Log.e(TAG, "First sequence of pipeline has not been created...");
         }
     }
 
