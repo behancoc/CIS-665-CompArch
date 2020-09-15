@@ -24,12 +24,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -98,17 +100,9 @@ public class MainActivity extends AppCompatActivity {
                     instructionList.add(6, seventhInstruction);
                     instructionList.add(7, eighthInstruction);
 
-
                     initializeInstructionCache(instructionList);
+                    executePipeline();
 
-                    constructPipelineSequence(firstInstruction, 0);
-                    constructPipelineSequence(secondInstruction, 2);
-
-
-                    int stalls = determineNumberOfStalls(false, secondInstruction, firstInstruction);
-                    Log.d(TAG, "Number of stalls: " + stalls);
-
-//                    constructPipelineSequence(secondInstruction, 2);
 
                 } else {
                     Log.d(TAG, "Switch is off!");
@@ -222,11 +216,24 @@ public class MainActivity extends AppCompatActivity {
             Instruction.SEGMENT currentInstructionRegisterNeeded = determineRegisterNeeded(forwarding, currentInstruction);
 
             //  3.) Out of sequence?
+            ListIterator<Instruction.SEGMENT> segmentListIterator = pipelineSequence.get(currentInstruction.getInstructionNumber() - 1).listIterator();
+            pipelineSequence.toArray();
+            Object[] test = pipelineSequence.get(1).toArray();
 
+            // Subtract 1 because pipeline sequence is 0 based but unfortunately our instructions numbers are not
+            int cycleRegisterNeeded = pipelineSequence.get(currentInstruction.getInstructionNumber() - 1).indexOf(currentInstructionRegisterNeeded);
+            int cycleRegisterAvail = pipelineSequence.get(previousInstruction.getInstructionNumber() - 1).indexOf(prevInstructionRegisterAvail);
 
+            Log.d(TAG, "cycleRegisterNeeded: " + cycleRegisterNeeded);
+            Log.d(TAG, "cycleRegisterAvail: " + cycleRegisterAvail);
+
+            if(cycleRegisterNeeded < cycleRegisterAvail) {
+                Log.d(TAG, "Yeah we should stall...");
+
+                //Stall cycles detected
+                return cycleRegisterAvail - cycleRegisterNeeded;
+            }
         }
-
-
 
         return 0;
     }
@@ -447,6 +454,10 @@ public class MainActivity extends AppCompatActivity {
 
 
             if (stallsRequired == 0 && instruction.getInstructionNumber() != 1) {
+                // Actually the instruction number dictates when the first FETCH is issued....
+                // Staging of FETCH always occurs within a cycle number that matches the instruction number
+                // Therefore...
+
                 pipelineSequence.add(index, new ArrayList<Instruction.SEGMENT>(Arrays.asList(Instruction.SEGMENT.FETCH,
                         Instruction.SEGMENT.DECODE,
                         Instruction.SEGMENT.EXECUTE,
@@ -456,6 +467,11 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if (stallsRequired != 0 && instruction.getInstructionNumber() != 1) {
+
+                //Flush
+                Log.d(TAG, "Instruction Number to be flushed: " + instruction.getInstructionNumber());
+                flushPreStallDetectionPipelineSequence(instruction);
+
 
                 // Actually the instruction number dictates when the first FETCH is issued....
                 // Staging of FETCH always occurs within a cycle number that matches the instruction number
@@ -486,6 +502,66 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.getMessage();
             Log.e(TAG, "First sequence of pipeline has not been created...");
+        }
+    }
+
+
+    private void constructPreStallDetectionPipelineSequence(Instruction instruction) {
+
+        try {
+            int index = instruction.getInstructionNumber() - 1;
+
+            int cycleIndex = 1;
+
+
+            if (instruction.getInstructionNumber() != 1) {
+
+                // Actually the instruction number dictates when the first FETCH is issued....
+                // Staging of FETCH always occurs within a cycle number that matches the instruction number
+                // Therefore...
+
+                pipelineSequence.add(index, new ArrayList<Instruction.SEGMENT>(Arrays.asList(Instruction.SEGMENT.EMPTY)));
+                cycleIndex ++;
+                while(cycleIndex != instruction.getInstructionNumber()) {
+                    pipelineSequence.get(index).add(cycleIndex, Instruction.SEGMENT.EMPTY);
+                    cycleIndex ++;
+                }
+
+                pipelineSequence.get(index).add(cycleIndex - 1, Instruction.SEGMENT.FETCH);
+
+                for(int i = 1; i < 5; i ++) {
+                    pipelineSequence.get(index).add(cycleIndex, Instruction.SEGMENT.valueOf(i));
+                    cycleIndex++;
+                }
+            }
+
+        } catch (Exception e) {
+            e.getMessage();
+            Log.e(TAG, "First sequence of pipeline has not been created...");
+        }
+
+    }
+
+    private void flushPreStallDetectionPipelineSequence(Instruction instruction) {
+        pipelineSequence.remove(instruction.getInstructionNumber() - 1);
+//        pipelineSequence.isEmpty();
+//        pipelineSequence.size();
+    }
+
+    private void executePipeline() {
+        int instructionCounter = 1;
+        Enumeration<Instruction> enumeration = instructionCache.getInstructions();
+
+        constructPipelineSequence(instructionCache.getInstruction(instructionCounter), 0);
+
+        while(enumeration.hasMoreElements()) {
+            instructionCounter ++;
+            constructPreStallDetectionPipelineSequence(instructionCache.getInstruction(instructionCounter));
+            int stalls = determineNumberOfStalls(false,
+                    instructionCache.getInstruction(instructionCounter),
+                    instructionCache.getInstruction(instructionCounter - 1));
+
+            constructPipelineSequence(instructionCache.getInstruction(instructionCounter), stalls);
         }
     }
 
