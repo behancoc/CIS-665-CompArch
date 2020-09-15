@@ -231,6 +231,17 @@ public class MainActivity extends AppCompatActivity {
 
         //Handling R-type data hazards
         try {
+
+            //Previous command was SW... this isn't technically a data hazard
+            if((previousInstructionDestinationRegister.equalsIgnoreCase(currentInstructionSourceReg1) ||
+               previousInstructionDestinationRegister.equalsIgnoreCase(currentInstructionSourceReg2)) &&
+               previousInstruction.getOperand().equalsIgnoreCase("SW") &&
+                    (currentInstruction.getOperand().equalsIgnoreCase("ADD")
+                            || currentInstruction.getOperand().equalsIgnoreCase("SUB"))) {
+
+                return DATA_DEPENDENCY.NONE;
+            }
+
             if(currentInstructionSourceReg1.equalsIgnoreCase(previousInstructionDestinationRegister) ||
                     currentInstructionSourceReg2.equalsIgnoreCase(previousInstructionDestinationRegister)) {
 
@@ -365,27 +376,25 @@ public class MainActivity extends AppCompatActivity {
             if (instruction.getOperand().equalsIgnoreCase("AND")) {
 
                 //DOUBLE CHECK THIS......
-                instructionCache.getInstruction(instruction.getInstructionNumber()).setRegisterAvailability(Instruction.SEGMENT.EXECUTE);
+                instructionCache.getInstruction(instruction.getInstructionNumber()).setRegisterAvailability(Instruction.SEGMENT.WRITE_BACK);
                 stage = Instruction.SEGMENT.EXECUTE;
             }
 
             if (instruction.getOperand().equalsIgnoreCase("OR")) {
 
                 //DOUBLE CHECK THIS......
-                instructionCache.getInstruction(instruction.getInstructionNumber()).setRegisterAvailability(Instruction.SEGMENT.EXECUTE);
+                instructionCache.getInstruction(instruction.getInstructionNumber()).setRegisterAvailability(Instruction.SEGMENT.WRITE_BACK);
                 stage = Instruction.SEGMENT.EXECUTE;
             }
 
             if(instruction.getOperand().equalsIgnoreCase("LW")) {
-
-                //DOUBLE CHECK THIS......
-                instructionCache.getInstruction(instruction.getInstructionNumber()).setRegisterAvailability(Instruction.SEGMENT.MEMORY);
+                instructionCache.getInstruction(instruction.getInstructionNumber()).setRegisterAvailability(Instruction.SEGMENT.WRITE_BACK);
                 stage = Instruction.SEGMENT.MEMORY;
             }
 
             if(instruction.getOperand().equalsIgnoreCase("SW")) {
                 //DOUBLE CHECK THIS...... ALSO....
-                instructionCache.getInstruction(instruction.getInstructionNumber()).setRegisterAvailability(Instruction.SEGMENT.WRITE_BACK);
+                instructionCache.getInstruction(instruction.getInstructionNumber()).setRegisterAvailability(Instruction.SEGMENT.MEMORY);
                 stage = Instruction.SEGMENT.WRITE_BACK;
             }
         }
@@ -545,11 +554,19 @@ public class MainActivity extends AppCompatActivity {
                 // Staging of FETCH always occurs within a cycle number that matches the instruction number
                 // Therefore...
 
-                pipelineSequence.add(index, new ArrayList<Instruction.SEGMENT>(Arrays.asList(Instruction.SEGMENT.FETCH,
-                        Instruction.SEGMENT.DECODE,
-                        Instruction.SEGMENT.EXECUTE,
-                        Instruction.SEGMENT.MEMORY,
-                        Instruction.SEGMENT.WRITE_BACK)));
+                pipelineSequence.get(index).add(cycleIndex - 1, Instruction.SEGMENT.EMPTY);
+                cycleIndex ++;
+                while(cycleIndex != instruction.getInstructionNumber()) {
+                    pipelineSequence.get(index).add(cycleIndex, Instruction.SEGMENT.EMPTY);
+                    cycleIndex ++;
+                }
+
+                pipelineSequence.get(index).add(cycleIndex - 1, Instruction.SEGMENT.FETCH);
+
+                for(int i = 1; i < 5; i ++) {
+                    pipelineSequence.get(index).add(cycleIndex, Instruction.SEGMENT.valueOf(i));
+                    cycleIndex++;
+                }
 
             }
 
