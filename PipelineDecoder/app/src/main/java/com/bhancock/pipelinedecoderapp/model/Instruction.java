@@ -1,6 +1,8 @@
 package com.bhancock.pipelinedecoderapp.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Instruction {
@@ -21,7 +23,8 @@ public class Instruction {
         DECODE(1),
         EXECUTE(2),
         MEMORY(3),
-        WRITE_BACK(4);
+        WRITE_BACK(4),
+        STALL(5);
 
         private int value;
         private static Map map = new HashMap<>();
@@ -45,6 +48,7 @@ public class Instruction {
         }
     }
 
+    private List<SEGMENT> pipelineSequence = new ArrayList<>();
 
     /**
      * Empty Constructor
@@ -172,5 +176,13 @@ public class Instruction {
 
     public void setRegisterRequired(SEGMENT registerRequired) {
         this.registerRequired = registerRequired;
+    }
+
+    public List<SEGMENT> getPipelineSequence() {
+        return pipelineSequence;
+    }
+
+    public void setPipelineSequence(List<SEGMENT> pipelineSequence) {
+        this.pipelineSequence = pipelineSequence;
     }
 }
