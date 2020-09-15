@@ -36,8 +36,6 @@ public class MainActivity extends AppCompatActivity {
     private static final int OPEN_DOCUMENT_REQUEST_CODE = 1;
 
     private boolean forwardingEnabled = false;
-    private int cycle = 0;
-    private int instructionFeed = 1;
     private Uri uri = null;
 
     InstructionCache instructionCache;
