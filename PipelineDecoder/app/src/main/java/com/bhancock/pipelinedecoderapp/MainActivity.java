@@ -40,8 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean forwardingEnabled = false;
     private Uri uri = null;
-    int currentCycle;
-    int cycleCounter;
+
 
     InstructionCache instructionCache;
     ArrayList<ArrayList<Instruction.SEGMENT>> pipelineSequence =
@@ -564,7 +563,6 @@ public class MainActivity extends AppCompatActivity {
             constructPipelineSequence(instructionCache.getInstruction(instructionCounter), stalls);
         }
     }
-
 
     @Override
     public void onLowMemory() {
