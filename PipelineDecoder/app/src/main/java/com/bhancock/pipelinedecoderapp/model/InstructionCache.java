@@ -2,8 +2,10 @@ package com.bhancock.pipelinedecoderapp.model;
 
 import android.content.Context;
 
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.List;
 
 
 public class InstructionCache {
@@ -30,10 +32,14 @@ public class InstructionCache {
 
     public Instruction getInstruction(Integer instructionNumber) {
         return mInstructionsHashTable.get(instructionNumber);
-
     }
 
     public void addInstruction(Integer key, Instruction instruction) {
         mInstructionsHashTable.put(key, instruction);
+    }
+
+    public int getSize() {
+        Collection<Instruction> collection = mInstructionsHashTable.values();
+        return collection.size();
     }
 }

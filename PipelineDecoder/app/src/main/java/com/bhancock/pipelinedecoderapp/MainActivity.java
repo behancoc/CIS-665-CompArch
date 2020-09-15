@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
                     Instruction firstInstruction = new Instruction(1, "ADD", "R1", "R2", "R3");
                     Instruction secondInstruction = new Instruction(2, "SUB", "R4", "R1", "R5");
                     Instruction thirdInstruction = new Instruction(3, "LW", "T0", 0, "S2");
-                    Instruction fourthInstruction = new Instruction(4, "ADD", "S2", "S2", 4);
+                    Instruction fourthInstruction = new Instruction(4, "ADDI", "S2", "S2", 4);
                     Instruction fifthInstruction = new Instruction(5, "ADD", "T0", "S2", 4);
                     Instruction sixthInstruction = new Instruction(6, "SW", "T0", 0, "S4");
                     Instruction seventhInstruction = new Instruction(7, "ADD", "S4", "S4", 4);
@@ -166,38 +166,113 @@ public class MainActivity extends AppCompatActivity {
 
 
     private DATA_DEPENDENCY dataDependencyCheck(Instruction currentInstruction, Instruction previousInstruction) {
-        String currentInstructionDestinationRegister = currentInstruction.getDestinationRegister();
-        String currentInstructionSourceReg1 = currentInstruction.getSourceRegister1();
-        String currentInstructionSourceReg2 = currentInstruction.getSourceRegister2();
+
+        String currentInstructionDestinationRegister = null;
+        String currentInstructionSourceReg1 = null;
+        String currentInstructionSourceReg2 = null;
+        String currentInstructionBaseAddress = null;
+        int currentInstructionOffset = -100;
+
+        String previousInstructionDestinationRegister = null;
+        String previousInstructionSourceReg1 = null;
+        String previousInstructionSourceReg2 = null;
+        String previousInstructionBaseAddress = null;
+        int previousInstructionOffset = -100;
 
 
-        String previousInstructionDestinationRegister = previousInstruction.getDestinationRegister();
-        String previousInstructionSourceReg1 = previousInstruction.getSourceRegister1();
-        String previousInstructionSourceReg2 = previousInstruction.getSourceRegister2();
+        //Handling R Type instructions
+        if(currentInstruction.getOperand().equalsIgnoreCase("ADD") ||
+                currentInstruction.getOperand().equalsIgnoreCase("SUB")) {
 
-        if(currentInstructionSourceReg1.equalsIgnoreCase(previousInstructionDestinationRegister) ||
-            currentInstructionSourceReg2.equalsIgnoreCase(previousInstructionDestinationRegister)) {
-
-
-            //THIS IS THE TRUE DEPENDENCE > FOCUS ON THIS SPECIFIC CASE FIRST!
-            Log.d(TAG, "POSSIBLE READ AFTER WRITE (RAW) DATA DEPENDENCY!");
-
-            return DATA_DEPENDENCY.READ_AFTER_WRITE;
-
-        } else if (currentInstructionDestinationRegister.equalsIgnoreCase(previousInstructionDestinationRegister)) {
-
-            Log.d(TAG, "POSSIBLE WRITE AFTER WRITE (WAW) DATA DEPENDENCY!");
-            return DATA_DEPENDENCY.WRITE_AFTER_WRITE;
-
-        } else if (currentInstructionDestinationRegister.equalsIgnoreCase(previousInstructionSourceReg1) ||
-                   currentInstructionDestinationRegister.equalsIgnoreCase(previousInstructionSourceReg2)) {
-            Log.d(TAG, "POSSIBLE WRITE AFTER READ (WAR) DATA DEPENDENCY!");
-            return DATA_DEPENDENCY.WRITE_AFTER_READ;
-
+            currentInstructionDestinationRegister = currentInstruction.getDestinationRegister();
+            currentInstructionSourceReg1 = currentInstruction.getSourceRegister1();
+            currentInstructionSourceReg2 = currentInstruction.getSourceRegister2();
         }
-        else {
-            return DATA_DEPENDENCY.NONE;
+
+        if (previousInstruction.getOperand().equalsIgnoreCase("ADD") ||
+                previousInstruction.getOperand().equalsIgnoreCase("SUB")) {
+
+            previousInstructionDestinationRegister = previousInstruction.getDestinationRegister();
+            previousInstructionSourceReg1 = previousInstruction.getSourceRegister1();
+            previousInstructionSourceReg2 = previousInstruction.getSourceRegister2();
         }
+
+
+        //Handling I Type instructions
+        if (currentInstruction.getOperand().equalsIgnoreCase("LW") ||
+            currentInstruction.getOperand().equalsIgnoreCase("SW")) {
+
+            currentInstructionDestinationRegister = currentInstruction.getDestinationRegister();
+            currentInstructionBaseAddress = currentInstruction.getBaseAddress();
+            currentInstructionOffset = currentInstruction.getOffset();
+        }
+
+        if (previousInstruction.getOperand().equalsIgnoreCase("LW") ||
+                previousInstruction.getOperand().equalsIgnoreCase("SW")) {
+
+            previousInstructionDestinationRegister = previousInstruction.getDestinationRegister();
+            previousInstructionBaseAddress = previousInstruction.getBaseAddress();
+            previousInstructionOffset = previousInstruction.getOffset();
+        }
+
+        if(currentInstruction.getOperand().equalsIgnoreCase("ADDI")) {
+            currentInstructionDestinationRegister = currentInstruction.getDestinationRegister();
+            currentInstructionBaseAddress = currentInstruction.getBaseAddress();
+            currentInstructionOffset = currentInstruction.getOffset();
+        }
+
+        if(previousInstruction.getOperand().equalsIgnoreCase("ADDI")) {
+            previousInstructionDestinationRegister = previousInstruction.getDestinationRegister();
+            previousInstructionBaseAddress = previousInstruction.getBaseAddress();
+            previousInstructionOffset = previousInstruction.getOffset();
+        }
+
+
+
+        //Handling R-type data hazards
+        try {
+            if(currentInstructionSourceReg1.equalsIgnoreCase(previousInstructionDestinationRegister) ||
+                    currentInstructionSourceReg2.equalsIgnoreCase(previousInstructionDestinationRegister)) {
+
+
+                //THIS IS THE TRUE DEPENDENCE > FOCUS ON THIS SPECIFIC CASE FIRST!
+                Log.d(TAG, "POSSIBLE READ AFTER WRITE (RAW) DATA DEPENDENCY!");
+
+                return DATA_DEPENDENCY.READ_AFTER_WRITE;
+
+            } else if (currentInstructionDestinationRegister.equalsIgnoreCase(previousInstructionDestinationRegister)) {
+
+                Log.d(TAG, "POSSIBLE WRITE AFTER WRITE (WAW) DATA DEPENDENCY!");
+                return DATA_DEPENDENCY.WRITE_AFTER_WRITE;
+
+            } else if (currentInstructionDestinationRegister.equalsIgnoreCase(previousInstructionSourceReg1) ||
+                    currentInstructionDestinationRegister.equalsIgnoreCase(previousInstructionSourceReg2)) {
+                Log.d(TAG, "POSSIBLE WRITE AFTER READ (WAR) DATA DEPENDENCY!");
+                return DATA_DEPENDENCY.WRITE_AFTER_READ;
+
+            }
+            else {
+                return DATA_DEPENDENCY.NONE;
+            }
+
+
+        } catch (Exception e) {
+            e.getMessage();
+            e.printStackTrace();
+        }
+
+        //Handling I-type data hazards
+        try {
+            if(currentInstructionDestinationRegister.equalsIgnoreCase(previousInstructionDestinationRegister)) {
+                Log.d(TAG, "POSSIBLE WRITE AFTER WRITE (WAW) DATA DEPENDENCY!");
+                return DATA_DEPENDENCY.WRITE_AFTER_WRITE;
+            }
+        } catch (Exception e) {
+            e.getMessage();
+            e.printStackTrace();
+        }
+
+        return DATA_DEPENDENCY.NONE;
     }
 
 
@@ -543,18 +618,26 @@ public class MainActivity extends AppCompatActivity {
 
     private void flushPreStallDetectionPipelineSequence(Instruction instruction) {
         pipelineSequence.remove(instruction.getInstructionNumber() - 1);
-//        pipelineSequence.isEmpty();
-//        pipelineSequence.size();
     }
 
     private void executePipeline() {
         int instructionCounter = 1;
         Enumeration<Instruction> enumeration = instructionCache.getInstructions();
 
+        int size = instructionCache.getSize();
+
+        Log.d(TAG, "SIZE! " + size);
+
         constructPipelineSequence(instructionCache.getInstruction(instructionCounter), 0);
 
         while(enumeration.hasMoreElements()) {
             instructionCounter ++;
+
+            if(enumeration.nextElement().getInstructionNumber() > size) {
+                break;
+            }
+
+            Log.d(TAG, "ENUMERATION!!!!" + enumeration.nextElement().getInstructionNumber().toString());
             constructPreStallDetectionPipelineSequence(instructionCache.getInstruction(instructionCounter));
             int stalls = determineNumberOfStalls(false,
                     instructionCache.getInstruction(instructionCounter),
