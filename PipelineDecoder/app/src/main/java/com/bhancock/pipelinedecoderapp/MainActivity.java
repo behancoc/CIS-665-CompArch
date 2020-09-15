@@ -456,7 +456,20 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if (stallsRequired != 0 && instruction.getInstructionNumber() != 1) {
-                pipelineSequence.add(index, new ArrayList<Instruction.SEGMENT>(Arrays.asList(Instruction.SEGMENT.FETCH)));
+
+                // Actually the instruction number dictates when the first FETCH is issued....
+                // Staging of FETCH always occurs within a cycle number that matches the instruction number
+                // Therefore...
+
+                pipelineSequence.add(index, new ArrayList<Instruction.SEGMENT>(Arrays.asList(Instruction.SEGMENT.EMPTY)));
+                cycleIndex ++;
+                while(cycleIndex != instruction.getInstructionNumber()) {
+                    pipelineSequence.get(index).add(cycleIndex, Instruction.SEGMENT.EMPTY);
+                    cycleIndex ++;
+                }
+
+//                pipelineSequence.add(index, new ArrayList<Instruction.SEGMENT>(Arrays.asList(Instruction.SEGMENT.FETCH)));
+                pipelineSequence.get(index).add(cycleIndex - 1, Instruction.SEGMENT.FETCH);
                 while (stallCounter != 0) {
                     pipelineSequence.get(index).add(cycleIndex, Instruction.SEGMENT.STALL);
                     stallCounter --;
