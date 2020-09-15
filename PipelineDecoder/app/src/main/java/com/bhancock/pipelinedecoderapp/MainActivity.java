@@ -101,6 +101,8 @@ public class MainActivity extends AppCompatActivity {
 
                     initializeInstructionCache(instructionList);
 
+                    constructPipelineSequence(firstInstruction, 0);
+                    constructPipelineSequence(secondInstruction, 2);
 
 
                     int stalls = determineNumberOfStalls(false, secondInstruction, firstInstruction);
@@ -434,6 +436,7 @@ public class MainActivity extends AppCompatActivity {
                     Instruction.SEGMENT.EXECUTE,
                     Instruction.SEGMENT.MEMORY,
                     Instruction.SEGMENT.WRITE_BACK))));
+            return;
         }
 
         try {
@@ -443,15 +446,16 @@ public class MainActivity extends AppCompatActivity {
             int cycleIndex = 1;
 
 
-            if (stallsRequired == 0) {
+            if (stallsRequired == 0 && instruction.getInstructionNumber() != 1) {
                 pipelineSequence.add(index, new ArrayList<Instruction.SEGMENT>(Arrays.asList(Instruction.SEGMENT.FETCH,
                         Instruction.SEGMENT.DECODE,
                         Instruction.SEGMENT.EXECUTE,
                         Instruction.SEGMENT.MEMORY,
                         Instruction.SEGMENT.WRITE_BACK)));
+
             }
 
-            if (stallsRequired != 0) {
+            if (stallsRequired != 0 && instruction.getInstructionNumber() != 1) {
                 pipelineSequence.add(index, new ArrayList<Instruction.SEGMENT>(Arrays.asList(Instruction.SEGMENT.FETCH)));
                 while (stallCounter != 0) {
                     pipelineSequence.get(index).add(cycleIndex, Instruction.SEGMENT.STALL);
