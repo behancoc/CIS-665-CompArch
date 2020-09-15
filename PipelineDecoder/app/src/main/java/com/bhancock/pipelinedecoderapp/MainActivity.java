@@ -77,33 +77,6 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, "Switch is on!");
                     forwardingEnabled = true;
 
-
-//                    Instruction firstInstruction = new Instruction(1, "LW", "S0", 0, "R2");
-                    Instruction firstInstruction = new Instruction(1, "ADD", "R1", "R2", "R3");
-                    Instruction secondInstruction = new Instruction(2, "SUB", "R4", "R1", "R5");
-                    Instruction thirdInstruction = new Instruction(3, "LW", "T0", 0, "S2");
-                    Instruction fourthInstruction = new Instruction(4, "ADDI", "S2", "S2", 4);
-                    Instruction fifthInstruction = new Instruction(5, "ADD", "T0", "S2", 4);
-                    Instruction sixthInstruction = new Instruction(6, "SW", "T0", 0, "S4");
-                    Instruction seventhInstruction = new Instruction(7, "ADD", "S4", "S4", 4);
-                    Instruction eighthInstruction = new Instruction(8, "ADD", "S0", "S0", 1);
-
-
-                    //TODO: Temporary, reading from file should write to cache directly!
-                    List<Instruction> instructionList = new ArrayList<>();
-                    instructionList.add(0, firstInstruction);
-                    instructionList.add(1, secondInstruction);
-                    instructionList.add(2, thirdInstruction);
-                    instructionList.add(3, fourthInstruction);
-                    instructionList.add(4, fifthInstruction);
-                    instructionList.add(5, sixthInstruction);
-                    instructionList.add(6, seventhInstruction);
-                    instructionList.add(7, eighthInstruction);
-
-                    initializeInstructionCache(instructionList);
-                    executePipeline();
-
-
                 } else {
                     Log.d(TAG, "Switch is off!");
                     forwardingEnabled = false;
@@ -126,7 +99,33 @@ public class MainActivity extends AppCompatActivity {
         runPipelineDecoder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO: HANDLE LOGIC HERE TO START/RUN PROGRAM
+
+
+                //                    Instruction firstInstruction = new Instruction(1, "LW", "S0", 0, "R2");
+                Instruction firstInstruction = new Instruction(1, "ADD", "R1", "R2", "R3");
+                Instruction secondInstruction = new Instruction(2, "SUB", "R4", "R1", "R5");
+                Instruction thirdInstruction = new Instruction(3, "LW", "T0", 0, "S2");
+                Instruction fourthInstruction = new Instruction(4, "ADDI", "S2", "S2", 4);
+                Instruction fifthInstruction = new Instruction(5, "ADD", "T0", "S2", 4);
+                Instruction sixthInstruction = new Instruction(6, "SW", "T0", 0, "S4");
+                Instruction seventhInstruction = new Instruction(7, "ADD", "S4", "S4", 4);
+                Instruction eighthInstruction = new Instruction(8, "ADD", "S0", "S0", 1);
+
+
+                //TODO: Temporary, reading from file should write to cache directly!
+                List<Instruction> instructionList = new ArrayList<>();
+                instructionList.add(0, firstInstruction);
+                instructionList.add(1, secondInstruction);
+                instructionList.add(2, thirdInstruction);
+                instructionList.add(3, fourthInstruction);
+                instructionList.add(4, fifthInstruction);
+                instructionList.add(5, sixthInstruction);
+                instructionList.add(6, seventhInstruction);
+                instructionList.add(7, eighthInstruction);
+
+                initializeInstructionCache(instructionList);
+                executePipeline();
+
 
                 Toast.makeText(getApplicationContext(), "Running Program", Toast.LENGTH_SHORT).show();
             }
@@ -635,6 +634,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void executePipeline() {
+
         int instructionCounter = 1;
         Enumeration<Instruction> enumeration = instructionCache.getInstructions();
 
@@ -653,7 +653,7 @@ public class MainActivity extends AppCompatActivity {
 
             Log.d(TAG, "ENUMERATION!!!!" + enumeration.nextElement().getInstructionNumber().toString());
             constructPreStallDetectionPipelineSequence(instructionCache.getInstruction(instructionCounter));
-            int stalls = determineNumberOfStalls(false,
+            int stalls = determineNumberOfStalls(forwardingEnabled,
                     instructionCache.getInstruction(instructionCounter),
                     instructionCache.getInstruction(instructionCounter - 1));
 
