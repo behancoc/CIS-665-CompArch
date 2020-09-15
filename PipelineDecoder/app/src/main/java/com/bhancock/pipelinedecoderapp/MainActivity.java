@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Formatter;
 import java.util.HashMap;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -37,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean forwardingEnabled = false;
     private Uri uri = null;
+    int currentCycle;
+    int cycleCounter;
 
     InstructionCache instructionCache;
     ArrayList<ArrayList<Instruction.SEGMENT>> pipelineSequence =
@@ -73,7 +76,8 @@ public class MainActivity extends AppCompatActivity {
                     forwardingEnabled = true;
 
 
-                    Instruction firstInstruction = new Instruction(1, "LW", "S0", 0, "R2");
+//                    Instruction firstInstruction = new Instruction(1, "LW", "S0", 0, "R2");
+                    Instruction firstInstruction = new Instruction(1, "ADD", "R1", "R2", "R3");
                     Instruction secondInstruction = new Instruction(2, "SUB", "R4", "R1", "R5");
                     Instruction thirdInstruction = new Instruction(3, "LW", "T0", 0, "S2");
                     Instruction fourthInstruction = new Instruction(4, "ADD", "S2", "S2", 4);
@@ -82,7 +86,27 @@ public class MainActivity extends AppCompatActivity {
                     Instruction seventhInstruction = new Instruction(7, "ADD", "S4", "S4", 4);
                     Instruction eighthInstruction = new Instruction(8, "ADD", "S0", "S0", 1);
 
-                    constructPipelineSequence(secondInstruction, 2);
+
+                    //TODO: Temporary, reading from file should write to cache directly!
+                    List<Instruction> instructionList = new ArrayList<>();
+                    instructionList.add(0, firstInstruction);
+                    instructionList.add(1, secondInstruction);
+                    instructionList.add(2, thirdInstruction);
+                    instructionList.add(3, fourthInstruction);
+                    instructionList.add(4, fifthInstruction);
+                    instructionList.add(5, sixthInstruction);
+                    instructionList.add(6, seventhInstruction);
+                    instructionList.add(7, eighthInstruction);
+
+
+                    initializeInstructionCache(instructionList);
+
+
+
+                    int stalls = determineNumberOfStalls(false, secondInstruction, firstInstruction);
+                    Log.d(TAG, "Number of stalls: " + stalls);
+
+//                    constructPipelineSequence(secondInstruction, 2);
 
                 } else {
                     Log.d(TAG, "Switch is off!");
@@ -140,85 +164,11 @@ public class MainActivity extends AppCompatActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
-
                 Log.d(TAG, "Path: " + uri.getEncodedPath());
-
-                //TODO: READ DATA FROM FILE AND POPULATE INSTRUCTIONS:
-
-                Instruction firstInstruction = new Instruction(1, "LW", "S0", 0, "R2");
-                Instruction secondInstruction = new Instruction(2, "SUB", "R4", "R1", "R5");
-                Instruction thirdInstruction = new Instruction(3, "LW", "T0", 0, "S2");
-                Instruction fourthInstruction = new Instruction(4, "ADD", "S2", "S2", 4);
-                Instruction fifthInstruction = new Instruction(5, "ADD", "T0", "S2", 4);
-                Instruction sixthInstruction = new Instruction(6, "SW", "T0", 0, "S4");
-                Instruction seventhInstruction = new Instruction(7, "ADD", "S4", "S4", 4);
-                Instruction eighthInstruction = new Instruction(8, "ADD", "S0", "S0", 1);
-
-
-                instructionCache.addInstruction(1, firstInstruction);
-                instructionCache.addInstruction(2, secondInstruction);
-                instructionCache.addInstruction(3, thirdInstruction);
-                instructionCache.addInstruction(4, fourthInstruction);
-                instructionCache.addInstruction(5, fifthInstruction);
-                instructionCache.addInstruction(6, sixthInstruction);
-                instructionCache.addInstruction(7, seventhInstruction);
-                instructionCache.addInstruction(8, eighthInstruction);
-
-
-                Enumeration<Instruction> enumeration = instructionCache.getInstructions();
-
-//                while(enumeration.hasMoreElements()) {
-//                    executePipeline(enumeration.nextElement());
-//                }
-
-                executePipeline(firstInstruction);
-
             }
         }
     }
 
-
-    public void executePipeline(@NonNull Instruction instruction) {
-
-        if (forwardingEnabled) {
-            //TODO: Handle forwarding pipelining scenario
-        }
-
-//        if (!forwardingEnabled) {
-//            if (instruction.getInstructionNumber() == 1) {
-//
-//
-//
-//
-//            } else {
-//
-//                //We're no longer on the first instruction here...
-//                //Current Instruction
-//                int currentInstructionNumber = instruction.getInstructionNumber();
-//
-//                //Previous Instruction
-//                int previousInstructionNumber = instructionCache.getInstruction(currentInstructionNumber - 1).getInstructionNumber();
-//                Instruction previousInstruction = instructionCache.getInstruction(currentInstructionNumber - 1);
-//
-//
-//                if (dataDependencyCheck(instruction, previousInstruction) != DATA_DEPENDENCY.NONE) {
-//                    //REPLACE WITH SWITCH STATEMENT EVENTUALLY?
-//
-//                    if (dataDependencyCheck(instruction, previousInstruction) == DATA_DEPENDENCY.READ_AFTER_WRITE) {
-//                        determineNumberOfStalls(forwardingEnabled, instruction, previousInstruction);
-//                    }
-//                }
-//
-//
-//
-//
-//                //TODO: Create method to check for structural hazards
-//                //TODO: Create method to check for control hazards (if we decide to do branch)
-//
-//            }
-//        }
-    }
 
     private DATA_DEPENDENCY dataDependencyCheck(Instruction currentInstruction, Instruction previousInstruction) {
         String currentInstructionDestinationRegister = currentInstruction.getDestinationRegister();
@@ -258,97 +208,216 @@ public class MainActivity extends AppCompatActivity {
 
     private int determineNumberOfStalls(Boolean forwarding, Instruction currentInstruction, Instruction previousInstruction) {
 
-        ArrayList<Instruction.SEGMENT> instructionPipeline = new ArrayList<>();
 
-        currentInstruction = instructionCache.getInstruction(2);
+        DATA_DEPENDENCY dataDependency = dataDependencyCheck(currentInstruction, previousInstruction);
 
-        for(int i = 0; i < 5; i++) {
-            Log.d(TAG ,  "Sanity check: " + Instruction.SEGMENT.valueOf(i));
-            instructionPipeline.add(i, Instruction.SEGMENT.valueOf(i));
-        }
+        if(dataDependency != DATA_DEPENDENCY.NONE) {
+            //  1.)  When is the register available?
+            Instruction.SEGMENT prevInstructionRegisterAvail = determineRegisterAvailability(forwarding, previousInstruction);
 
+            //  2.)  When is the register needed?
+            determineRegisterNeeded(forwarding, currentInstruction);
+            Instruction.SEGMENT currentInstructionRegisterNeeded = determineRegisterNeeded(forwarding, currentInstruction);
 
+            //  3.) Out of sequence?
 
-        Instruction.SEGMENT stagePrevInstRegAvailable = previousInstruction.getRegisterAvailability();
-        Instruction.SEGMENT stageCurInstructionRegRequired = currentInstruction.getRegisterRequired();
-
-
-        if (forwarding) {
 
         }
 
-        if (!forwarding) {
 
-        }
 
         return 0;
     }
 
-    private void determineRegisterAvailability(boolean forwardingEnabled, Instruction instruction) {
+    private Instruction.SEGMENT determineRegisterAvailability(boolean forwardingEnabled, Instruction instruction) {
+
+        Instruction.SEGMENT stage = Instruction.SEGMENT.UNKNOWN;
+
         if(forwardingEnabled) {
             if (instruction.getOperand().equalsIgnoreCase("ADD")) {
                 instructionCache.getInstruction(instruction.getInstructionNumber()).setRegisterAvailability(Instruction.SEGMENT.EXECUTE);
+                stage = Instruction.SEGMENT.EXECUTE;
             }
 
             if (instruction.getOperand().equalsIgnoreCase("SUB")) {
                 instructionCache.getInstruction(instruction.getInstructionNumber()).setRegisterAvailability(Instruction.SEGMENT.EXECUTE);
+                stage = Instruction.SEGMENT.EXECUTE;
             }
 
             if (instruction.getOperand().equalsIgnoreCase("AND")) {
                 instructionCache.getInstruction(instruction.getInstructionNumber()).setRegisterAvailability(Instruction.SEGMENT.EXECUTE);
+                stage = Instruction.SEGMENT.EXECUTE;
             }
 
             if (instruction.getOperand().equalsIgnoreCase("OR")) {
                 instructionCache.getInstruction(instruction.getInstructionNumber()).setRegisterAvailability(Instruction.SEGMENT.EXECUTE);
+                stage = Instruction.SEGMENT.EXECUTE;
             }
 
             if(instruction.getOperand().equalsIgnoreCase("LW")) {
 
                 //DOUBLE CHECK THIS......
                 instructionCache.getInstruction(instruction.getInstructionNumber()).setRegisterAvailability(Instruction.SEGMENT.MEMORY);
+                stage = Instruction.SEGMENT.MEMORY;
             }
 
             if(instruction.getOperand().equalsIgnoreCase("SW")) {
                 //DOUBLE CHECK THIS...... ALSO....
                 instructionCache.getInstruction(instruction.getInstructionNumber()).setRegisterAvailability(Instruction.SEGMENT.MEMORY);
+                stage = Instruction.SEGMENT.MEMORY;
             }
-
-
         }
 
         if(!forwardingEnabled) {
             if (instruction.getOperand().equalsIgnoreCase("ADD")) {
                 instructionCache.getInstruction(instruction.getInstructionNumber()).setRegisterAvailability(Instruction.SEGMENT.WRITE_BACK);
+                stage = Instruction.SEGMENT.WRITE_BACK;
             }
 
             if (instruction.getOperand().equalsIgnoreCase("SUB")) {
                 instructionCache.getInstruction(instruction.getInstructionNumber()).setRegisterAvailability(Instruction.SEGMENT.WRITE_BACK);
+                stage = Instruction.SEGMENT.WRITE_BACK;
             }
 
             if (instruction.getOperand().equalsIgnoreCase("AND")) {
 
                 //DOUBLE CHECK THIS......
                 instructionCache.getInstruction(instruction.getInstructionNumber()).setRegisterAvailability(Instruction.SEGMENT.EXECUTE);
+                stage = Instruction.SEGMENT.EXECUTE;
             }
 
             if (instruction.getOperand().equalsIgnoreCase("OR")) {
 
                 //DOUBLE CHECK THIS......
                 instructionCache.getInstruction(instruction.getInstructionNumber()).setRegisterAvailability(Instruction.SEGMENT.EXECUTE);
+                stage = Instruction.SEGMENT.EXECUTE;
             }
 
             if(instruction.getOperand().equalsIgnoreCase("LW")) {
 
                 //DOUBLE CHECK THIS......
                 instructionCache.getInstruction(instruction.getInstructionNumber()).setRegisterAvailability(Instruction.SEGMENT.MEMORY);
+                stage = Instruction.SEGMENT.MEMORY;
             }
 
             if(instruction.getOperand().equalsIgnoreCase("SW")) {
                 //DOUBLE CHECK THIS...... ALSO....
                 instructionCache.getInstruction(instruction.getInstructionNumber()).setRegisterAvailability(Instruction.SEGMENT.WRITE_BACK);
+                stage = Instruction.SEGMENT.WRITE_BACK;
+            }
+        }
+        return stage;
+    }
+
+    private Instruction.SEGMENT determineRegisterNeeded(boolean forwardingEnabled, Instruction instruction) {
+
+        //TODO: DOUBLE CHECK THE RETURN SEGMENT FOR ALL SCENARIOS
+
+        Instruction.SEGMENT stage = Instruction.SEGMENT.UNKNOWN;
+
+        if(forwardingEnabled) {
+            if(instruction.getOperand().equalsIgnoreCase("ADD")) {
+                instructionCache.getInstruction(instruction.getInstructionNumber())
+                        .setRegisterRequired(Instruction.SEGMENT.DECODE);
+
+                stage = Instruction.SEGMENT.DECODE;
+            }
+
+            if(instruction.getOperand().equalsIgnoreCase("SUB")) {
+                instructionCache.getInstruction(instruction.getInstructionNumber())
+                        .setRegisterRequired(Instruction.SEGMENT.DECODE);
+
+                stage = Instruction.SEGMENT.DECODE;
+            }
+
+            if(instruction.getOperand().equalsIgnoreCase("AND")) {
+                instructionCache.getInstruction(instruction.getInstructionNumber())
+                        .setRegisterRequired(Instruction.SEGMENT.DECODE);
+
+                stage = Instruction.SEGMENT.DECODE;
+            }
+
+            if(instruction.getOperand().equalsIgnoreCase("OR")) {
+                instructionCache.getInstruction(instruction.getInstructionNumber())
+                        .setRegisterRequired(Instruction.SEGMENT.DECODE);
+
+                stage = Instruction.SEGMENT.DECODE;
+            }
+
+            if(instruction.getOperand().equalsIgnoreCase("LW")) {
+                instructionCache.getInstruction(instruction.getInstructionNumber())
+                        .setRegisterRequired(Instruction.SEGMENT.DECODE);
+
+                stage = Instruction.SEGMENT.DECODE;
+            }
+
+            if(instruction.getOperand().equalsIgnoreCase("SW")) {
+                instructionCache.getInstruction(instruction.getInstructionNumber())
+                        .setRegisterRequired(Instruction.SEGMENT.DECODE);
+
+                stage = Instruction.SEGMENT.DECODE;
             }
         }
 
+
+        if (!forwardingEnabled) {
+            if(instruction.getOperand().equalsIgnoreCase("ADD")) {
+                instructionCache.getInstruction(instruction.getInstructionNumber())
+                        .setRegisterRequired(Instruction.SEGMENT.DECODE);
+
+                stage = Instruction.SEGMENT.DECODE;
+            }
+
+            if(instruction.getOperand().equalsIgnoreCase("SUB")) {
+                instructionCache.getInstruction(instruction.getInstructionNumber())
+                        .setRegisterRequired(Instruction.SEGMENT.DECODE);
+
+                stage = Instruction.SEGMENT.DECODE;
+            }
+
+            if(instruction.getOperand().equalsIgnoreCase("AND")) {
+                instructionCache.getInstruction(instruction.getInstructionNumber())
+                        .setRegisterRequired(Instruction.SEGMENT.DECODE);
+
+                stage = Instruction.SEGMENT.DECODE;
+            }
+
+            if(instruction.getOperand().equalsIgnoreCase("OR")) {
+                instructionCache.getInstruction(instruction.getInstructionNumber())
+                        .setRegisterRequired(Instruction.SEGMENT.DECODE);
+
+                stage = Instruction.SEGMENT.DECODE;
+            }
+
+            if(instruction.getOperand().equalsIgnoreCase("LW")) {
+                instructionCache.getInstruction(instruction.getInstructionNumber())
+                        .setRegisterRequired(Instruction.SEGMENT.DECODE);
+
+                stage = Instruction.SEGMENT.DECODE;
+            }
+
+            if(instruction.getOperand().equalsIgnoreCase("SW")) {
+                instructionCache.getInstruction(instruction.getInstructionNumber())
+                        .setRegisterRequired(Instruction.SEGMENT.DECODE);
+
+                stage = Instruction.SEGMENT.DECODE;
+            }
+        }
+        return stage;
+    }
+
+    private void initializeInstructionCache(List<Instruction> instructions){
+        for(Instruction instruction: instructions) {
+            instructionCache.addInstruction(instruction.getInstructionNumber(), instruction);
+        }
+    }
+
+    private void updateCache(Enumeration enumeration) {
+        int cacheIndex = 1;
+        while(enumeration.hasMoreElements()) {
+            instructionCache.addInstruction(cacheIndex, (Instruction) enumeration.nextElement());
+            cacheIndex ++;
+        }
     }
 
 
