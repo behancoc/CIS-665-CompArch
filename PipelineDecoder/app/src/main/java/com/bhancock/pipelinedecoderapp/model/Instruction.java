@@ -24,7 +24,8 @@ public class Instruction {
         EXECUTE(2),
         MEMORY(3),
         WRITE_BACK(4),
-        STALL(5);
+        STALL(5),
+        UNKNOWN(6);
 
         private int value;
         private static Map map = new HashMap<>();
