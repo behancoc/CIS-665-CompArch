@@ -343,6 +343,11 @@ public class MainActivity extends AppCompatActivity {
                 stage = Instruction.SEGMENT.EXECUTE;
             }
 
+            if (instruction.getOperand().equalsIgnoreCase("ADDI")) {
+                instructionCache.getInstruction(instruction.getInstructionNumber()).setRegisterAvailability(Instruction.SEGMENT.EXECUTE);
+                stage = Instruction.SEGMENT.EXECUTE;
+            }
+
             if (instruction.getOperand().equalsIgnoreCase("SUB")) {
                 instructionCache.getInstruction(instruction.getInstructionNumber()).setRegisterAvailability(Instruction.SEGMENT.EXECUTE);
                 stage = Instruction.SEGMENT.EXECUTE;
@@ -374,6 +379,11 @@ public class MainActivity extends AppCompatActivity {
 
         if(!forwardingEnabled) {
             if (instruction.getOperand().equalsIgnoreCase("ADD")) {
+                instructionCache.getInstruction(instruction.getInstructionNumber()).setRegisterAvailability(Instruction.SEGMENT.WRITE_BACK);
+                stage = Instruction.SEGMENT.WRITE_BACK;
+            }
+
+            if (instruction.getOperand().equalsIgnoreCase("ADDI")) {
                 instructionCache.getInstruction(instruction.getInstructionNumber()).setRegisterAvailability(Instruction.SEGMENT.WRITE_BACK);
                 stage = Instruction.SEGMENT.WRITE_BACK;
             }
@@ -425,6 +435,13 @@ public class MainActivity extends AppCompatActivity {
                 stage = Instruction.SEGMENT.DECODE;
             }
 
+            if(instruction.getOperand().equalsIgnoreCase("ADDI")) {
+                instructionCache.getInstruction(instruction.getInstructionNumber())
+                        .setRegisterRequired(Instruction.SEGMENT.DECODE);
+
+                stage = Instruction.SEGMENT.DECODE;
+            }
+
             if(instruction.getOperand().equalsIgnoreCase("SUB")) {
                 instructionCache.getInstruction(instruction.getInstructionNumber())
                         .setRegisterRequired(Instruction.SEGMENT.DECODE);
@@ -464,6 +481,13 @@ public class MainActivity extends AppCompatActivity {
 
         if (!forwardingEnabled) {
             if(instruction.getOperand().equalsIgnoreCase("ADD")) {
+                instructionCache.getInstruction(instruction.getInstructionNumber())
+                        .setRegisterRequired(Instruction.SEGMENT.DECODE);
+
+                stage = Instruction.SEGMENT.DECODE;
+            }
+
+            if(instruction.getOperand().equalsIgnoreCase("ADDI")) {
                 instructionCache.getInstruction(instruction.getInstructionNumber())
                         .setRegisterRequired(Instruction.SEGMENT.DECODE);
 
@@ -686,7 +710,13 @@ public class MainActivity extends AppCompatActivity {
             constructPipelineSequence(instructionCache.getInstruction(instructionCounter), 0);
         }
         printToConsole();
+        resetProgram();
     }
+
+    private void resetProgram() {
+        instructionCache.resetCache();
+        pipelineSequence.clear();
+    };
 
     @Override
     public void onLowMemory() {

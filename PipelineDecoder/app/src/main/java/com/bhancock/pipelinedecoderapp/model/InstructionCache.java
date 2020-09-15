@@ -42,7 +42,12 @@ public class InstructionCache {
         Collection<Instruction> collection = mInstructionsHashTable.values();
         return collection.size();
     }
+
     public Collection<Instruction> getInstructionsAsCollection() {
         return mInstructionsHashTable.values();
+    }
+
+    public void resetCache() {
+        mInstructionsHashTable.clear();
     }
 }
