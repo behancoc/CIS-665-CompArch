@@ -27,6 +27,7 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Formatter;
 import java.util.HashMap;
@@ -101,15 +102,24 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
 
 
-                //                    Instruction firstInstruction = new Instruction(1, "LW", "S0", 0, "R2");
-                Instruction firstInstruction = new Instruction(1, "ADD", "R1", "R2", "R3");
-                Instruction secondInstruction = new Instruction(2, "SUB", "R4", "R1", "R5");
+
+//                Instruction firstInstruction = new Instruction(1, "ADD", "R1", "R2", "R3");
+//                Instruction secondInstruction = new Instruction(2, "SUB", "R4", "R1", "R5");
+//                Instruction thirdInstruction = new Instruction(3, "LW", "T0", 0, "S2");
+//                Instruction fourthInstruction = new Instruction(4, "ADDI", "S2", "S2", 4);
+//                Instruction fifthInstruction = new Instruction(5, "ADD", "T0", "S2", 4);
+//                Instruction sixthInstruction = new Instruction(6, "SW", "T0", 0, "S4");
+//                Instruction seventhInstruction = new Instruction(7, "ADD", "S4", "S4", 4);
+//                Instruction eighthInstruction = new Instruction(8, "ADD", "S0", "S0", 1);
+
+                Instruction firstInstruction = new Instruction(1, "ADDI", "S0", "0", "0");
+                Instruction secondInstruction = new Instruction(2, "ADD", "S10", "S1", "S0");
                 Instruction thirdInstruction = new Instruction(3, "LW", "T0", 0, "S2");
                 Instruction fourthInstruction = new Instruction(4, "ADDI", "S2", "S2", 4);
-                Instruction fifthInstruction = new Instruction(5, "ADD", "T0", "S2", 4);
+                Instruction fifthInstruction = new Instruction(5, "ADDI", "T0", "T0", 5);
                 Instruction sixthInstruction = new Instruction(6, "SW", "T0", 0, "S4");
-                Instruction seventhInstruction = new Instruction(7, "ADD", "S4", "S4", 4);
-                Instruction eighthInstruction = new Instruction(8, "ADD", "S0", "S0", 1);
+                Instruction seventhInstruction = new Instruction(7, "ADDI", "S4", "S4", 4);
+                Instruction eighthInstruction = new Instruction(8, "ADDI", "S0", "S0", 1);
 
 
                 //TODO: Temporary, reading from file should write to cache directly!
@@ -550,14 +560,15 @@ public class MainActivity extends AppCompatActivity {
 
 
             if (stallsRequired == 0 && instruction.getInstructionNumber() != 1) {
+                flushPreStallDetectionPipelineSequence(instruction);
                 // Actually the instruction number dictates when the first FETCH is issued....
                 // Staging of FETCH always occurs within a cycle number that matches the instruction number
                 // Therefore...
 
-                pipelineSequence.get(index).add(cycleIndex - 1, Instruction.SEGMENT.EMPTY);
+                pipelineSequence.add(index, new ArrayList<Instruction.SEGMENT>(Arrays.asList(Instruction.SEGMENT.EMPTY)));
                 cycleIndex ++;
                 while(cycleIndex != instruction.getInstructionNumber()) {
-                    pipelineSequence.get(index).add(cycleIndex, Instruction.SEGMENT.EMPTY);
+                    pipelineSequence.get(index).add(cycleIndex - 1, Instruction.SEGMENT.EMPTY);
                     cycleIndex ++;
                 }
 
@@ -584,7 +595,7 @@ public class MainActivity extends AppCompatActivity {
                 pipelineSequence.add(index, new ArrayList<Instruction.SEGMENT>(Arrays.asList(Instruction.SEGMENT.EMPTY)));
                 cycleIndex ++;
                 while(cycleIndex != instruction.getInstructionNumber()) {
-                    pipelineSequence.get(index).add(cycleIndex, Instruction.SEGMENT.EMPTY);
+                    pipelineSequence.get(index).add(cycleIndex - 1, Instruction.SEGMENT.EMPTY);
                     cycleIndex ++;
                 }
 
@@ -627,14 +638,14 @@ public class MainActivity extends AppCompatActivity {
                 pipelineSequence.add(index, new ArrayList<Instruction.SEGMENT>(Arrays.asList(Instruction.SEGMENT.EMPTY)));
                 cycleIndex ++;
                 while(cycleIndex != instruction.getInstructionNumber()) {
-                    pipelineSequence.get(index).add(cycleIndex, Instruction.SEGMENT.EMPTY);
+                    pipelineSequence.get(index).add(cycleIndex -1, Instruction.SEGMENT.EMPTY);
                     cycleIndex ++;
                 }
 
                 pipelineSequence.get(index).add(cycleIndex - 1, Instruction.SEGMENT.FETCH);
 
                 for(int i = 1; i < 5; i ++) {
-                    pipelineSequence.get(index).add(cycleIndex, Instruction.SEGMENT.valueOf(i));
+                    pipelineSequence.get(index).add(cycleIndex , Instruction.SEGMENT.valueOf(i));
                     cycleIndex++;
                 }
             }
@@ -654,9 +665,7 @@ public class MainActivity extends AppCompatActivity {
 
         int instructionCounter = 1;
         Enumeration<Instruction> enumeration = instructionCache.getInstructions();
-
         int instructionCacheSize = instructionCache.getSize();
-
         Log.d(TAG, "SIZE! " + instructionCacheSize);
 
         constructPipelineSequence(instructionCache.getInstruction(instructionCounter), 0);
@@ -664,17 +673,17 @@ public class MainActivity extends AppCompatActivity {
         while(enumeration.hasMoreElements()) {
             instructionCounter ++;
 
-            if(enumeration.nextElement().getInstructionNumber() > instructionCacheSize) {
+            if(instructionCounter > instructionCacheSize) {
                 break;
             }
 
-            Log.d(TAG, "ENUMERATION!!!!" + enumeration.nextElement().getInstructionNumber().toString());
             constructPreStallDetectionPipelineSequence(instructionCache.getInstruction(instructionCounter));
+
             int stalls = determineNumberOfStalls(forwardingEnabled,
                     instructionCache.getInstruction(instructionCounter),
                     instructionCache.getInstruction(instructionCounter - 1));
 
-            constructPipelineSequence(instructionCache.getInstruction(instructionCounter), stalls);
+            constructPipelineSequence(instructionCache.getInstruction(instructionCounter), 0);
         }
         printToConsole();
     }
