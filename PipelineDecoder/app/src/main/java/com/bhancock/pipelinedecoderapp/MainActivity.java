@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         instructionCache = InstructionCache.getInstance(getApplicationContext());
         Switch forwardingSwitch = findViewById(R.id.forwarding_switch);
         Button openFile = findViewById(R.id.open_file);
-        Button run = findViewById(R.id.open_file);
+        Button runPipelineDecoder = findViewById(R.id.run_program);
 
 
 
@@ -86,27 +86,6 @@ public class MainActivity extends AppCompatActivity {
 
                     constructPipelineSequence(secondInstruction, 2);
 
-
-//                    ArrayList<ArrayList<Instruction.SEGMENT>> pipelineSequence = new ArrayList<ArrayList<Instruction.SEGMENT>>();
-//
-//                    pipelineSequence.add((new ArrayList<Instruction.SEGMENT>(Arrays.asList(Instruction.SEGMENT.FETCH,
-//                            Instruction.SEGMENT.DECODE,
-//                            Instruction.SEGMENT.EXECUTE,
-//                            Instruction.SEGMENT.MEMORY,
-//                            Instruction.SEGMENT.WRITE_BACK))));
-//
-//                    pipelineSequence.add(1, new ArrayList<Instruction.SEGMENT>(Arrays.asList(Instruction.SEGMENT.FETCH,
-//                            Instruction.SEGMENT.STALL,
-//                            Instruction.SEGMENT.STALL,
-//                            Instruction.SEGMENT.DECODE,
-//                            Instruction.SEGMENT.MEMORY,
-//                            Instruction.SEGMENT.WRITE_BACK)));
-//
-//                    Log.d(TAG, pipelineSequence.toString());
-//                    ArrayList<Instruction.SEGMENT> test = pipelineSequence.get(1);
-//                    Log.d(TAG, test.toString());
-
-
                 } else {
                     Log.d(TAG, "Switch is off!");
                     forwardingEnabled = false;
@@ -126,16 +105,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//        run.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-////                if(uri == null) {
-////                    Toast.makeText(getApplicationContext(),"Unable to find text file", Toast.LENGTH_SHORT).show();
-////                }
-//            }
-//        });
+        runPipelineDecoder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //TODO: HANDLE LOGIC HERE TO START/RUN PROGRAM
 
-
+                Toast.makeText(getApplicationContext(), "Running Program", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 
@@ -205,43 +182,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void executePipeline(@NonNull Instruction instruction) {
-
-        ArrayList<ArrayList<Instruction.SEGMENT>> pipelineSequence = new ArrayList<ArrayList<Instruction.SEGMENT>>();
-
-        pipelineSequence.add((new ArrayList<Instruction.SEGMENT>(Arrays.asList(Instruction.SEGMENT.FETCH,
-                Instruction.SEGMENT.DECODE,
-                Instruction.SEGMENT.EXECUTE,
-                Instruction.SEGMENT.MEMORY,
-                Instruction.SEGMENT.WRITE_BACK))));
-
-//        ArrayList<Instruction.SEGMENT> instructionPipeline = new ArrayList<>();
-//        StringBuilder stringBuilder = new StringBuilder();
-//
-//        stringBuilder.append(instruction.getOperand());
-//        stringBuilder.append(" ");
-//        stringBuilder.append(instruction.getOffset());
-
-//        for(int i = 0; i < 5; i++) {
-//
-//
-//            stringBuilder.append("|");
-//            stringBuilder.append(Instruction.SEGMENT.valueOf(i).toString());
-//            stringBuilder.append("|");
-//            Log.d(TAG ,  Instruction.SEGMENT.valueOf(i).toString());
-//
-//            instructionPipeline.add(i, Instruction.SEGMENT.valueOf(i));
-//        }
-//
-//        Log.d(TAG, stringBuilder.toString());
-
-
-
-
-
-
-
-
-
 
         if (forwardingEnabled) {
             //TODO: Handle forwarding pipelining scenario
