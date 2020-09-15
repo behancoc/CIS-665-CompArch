@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Formatter;
 import java.util.HashMap;
@@ -40,7 +41,8 @@ public class MainActivity extends AppCompatActivity {
     private Uri uri = null;
 
     InstructionCache instructionCache;
-    HashMap<String, Instruction.SEGMENT> segmentMapping = new HashMap();
+    ArrayList<ArrayList<Instruction.SEGMENT>> pipelineSequence =
+            new ArrayList<ArrayList<Instruction.SEGMENT>>();
 
 
     public enum DATA_DEPENDENCY  {
@@ -71,6 +73,40 @@ public class MainActivity extends AppCompatActivity {
                 if(b) {
                     Log.d(TAG, "Switch is on!");
                     forwardingEnabled = true;
+
+
+                    Instruction firstInstruction = new Instruction(1, "LW", "S0", 0, "R2");
+                    Instruction secondInstruction = new Instruction(2, "SUB", "R4", "R1", "R5");
+                    Instruction thirdInstruction = new Instruction(3, "LW", "T0", 0, "S2");
+                    Instruction fourthInstruction = new Instruction(4, "ADD", "S2", "S2", 4);
+                    Instruction fifthInstruction = new Instruction(5, "ADD", "T0", "S2", 4);
+                    Instruction sixthInstruction = new Instruction(6, "SW", "T0", 0, "S4");
+                    Instruction seventhInstruction = new Instruction(7, "ADD", "S4", "S4", 4);
+                    Instruction eighthInstruction = new Instruction(8, "ADD", "S0", "S0", 1);
+
+                    constructPipelineSequence(secondInstruction, 2);
+
+
+//                    ArrayList<ArrayList<Instruction.SEGMENT>> pipelineSequence = new ArrayList<ArrayList<Instruction.SEGMENT>>();
+//
+//                    pipelineSequence.add((new ArrayList<Instruction.SEGMENT>(Arrays.asList(Instruction.SEGMENT.FETCH,
+//                            Instruction.SEGMENT.DECODE,
+//                            Instruction.SEGMENT.EXECUTE,
+//                            Instruction.SEGMENT.MEMORY,
+//                            Instruction.SEGMENT.WRITE_BACK))));
+//
+//                    pipelineSequence.add(1, new ArrayList<Instruction.SEGMENT>(Arrays.asList(Instruction.SEGMENT.FETCH,
+//                            Instruction.SEGMENT.STALL,
+//                            Instruction.SEGMENT.STALL,
+//                            Instruction.SEGMENT.DECODE,
+//                            Instruction.SEGMENT.MEMORY,
+//                            Instruction.SEGMENT.WRITE_BACK)));
+//
+//                    Log.d(TAG, pipelineSequence.toString());
+//                    ArrayList<Instruction.SEGMENT> test = pipelineSequence.get(1);
+//                    Log.d(TAG, test.toString());
+
+
                 } else {
                     Log.d(TAG, "Switch is off!");
                     forwardingEnabled = false;
@@ -160,6 +196,7 @@ public class MainActivity extends AppCompatActivity {
 //                while(enumeration.hasMoreElements()) {
 //                    executePipeline(enumeration.nextElement());
 //                }
+
                 executePipeline(firstInstruction);
 
             }
@@ -169,25 +206,33 @@ public class MainActivity extends AppCompatActivity {
 
     public void executePipeline(@NonNull Instruction instruction) {
 
-        ArrayList<Instruction.SEGMENT> instructionPipeline = new ArrayList<>();
-        StringBuilder stringBuilder = new StringBuilder();
+        ArrayList<ArrayList<Instruction.SEGMENT>> pipelineSequence = new ArrayList<ArrayList<Instruction.SEGMENT>>();
 
-        stringBuilder.append(instruction.getOperand());
-        stringBuilder.append(" ");
-        stringBuilder.append(instruction.getOffset());
+        pipelineSequence.add((new ArrayList<Instruction.SEGMENT>(Arrays.asList(Instruction.SEGMENT.FETCH,
+                Instruction.SEGMENT.DECODE,
+                Instruction.SEGMENT.EXECUTE,
+                Instruction.SEGMENT.MEMORY,
+                Instruction.SEGMENT.WRITE_BACK))));
 
-        for(int i = 0; i < 5; i++) {
+//        ArrayList<Instruction.SEGMENT> instructionPipeline = new ArrayList<>();
+//        StringBuilder stringBuilder = new StringBuilder();
+//
+//        stringBuilder.append(instruction.getOperand());
+//        stringBuilder.append(" ");
+//        stringBuilder.append(instruction.getOffset());
 
-
-            stringBuilder.append("|");
-            stringBuilder.append(Instruction.SEGMENT.valueOf(i).toString());
-            stringBuilder.append("|");
+//        for(int i = 0; i < 5; i++) {
+//
+//
+//            stringBuilder.append("|");
+//            stringBuilder.append(Instruction.SEGMENT.valueOf(i).toString());
+//            stringBuilder.append("|");
 //            Log.d(TAG ,  Instruction.SEGMENT.valueOf(i).toString());
-
-            instructionPipeline.add(i, Instruction.SEGMENT.valueOf(i));
-        }
-
-        Log.d(TAG, stringBuilder.toString());
+//
+//            instructionPipeline.add(i, Instruction.SEGMENT.valueOf(i));
+//        }
+//
+//        Log.d(TAG, stringBuilder.toString());
 
 
 
@@ -372,6 +417,53 @@ public class MainActivity extends AppCompatActivity {
     public void printToConsole(Instruction instruction) {
 
 
+    }
+
+    public void constructPipelineSequence(Instruction instruction, int stallsRequired) {
+
+
+
+        pipelineSequence.add((new ArrayList<Instruction.SEGMENT>(Arrays.asList(Instruction.SEGMENT.FETCH,
+                Instruction.SEGMENT.DECODE,
+                Instruction.SEGMENT.EXECUTE,
+                Instruction.SEGMENT.MEMORY,
+                Instruction.SEGMENT.WRITE_BACK))));
+
+
+        int index = instruction.getInstructionNumber() - 1;
+
+        int stallCounter = stallsRequired;
+        int cycleIndex = 1;
+
+
+
+
+
+        if (stallsRequired == 0) {
+            pipelineSequence.add(index, new ArrayList<Instruction.SEGMENT>(Arrays.asList(Instruction.SEGMENT.FETCH,
+                    Instruction.SEGMENT.DECODE,
+                    Instruction.SEGMENT.EXECUTE,
+                    Instruction.SEGMENT.MEMORY,
+                    Instruction.SEGMENT.WRITE_BACK)));
+        }
+
+        if (stallsRequired != 0) {
+            pipelineSequence.add(index, new ArrayList<Instruction.SEGMENT>(Arrays.asList(Instruction.SEGMENT.FETCH)));
+            while (stallCounter != 0) {
+                pipelineSequence.get(index).add(cycleIndex, Instruction.SEGMENT.STALL);
+                stallCounter --;
+                cycleIndex ++;
+            }
+
+
+            for(int i = 1; i < 5; i ++) {
+                pipelineSequence.get(index).add(cycleIndex, Instruction.SEGMENT.valueOf(i));
+                cycleIndex++;
+            }
+
+//            pipelineSequence.get(index).add(, );
+
+        }
     }
 
 
