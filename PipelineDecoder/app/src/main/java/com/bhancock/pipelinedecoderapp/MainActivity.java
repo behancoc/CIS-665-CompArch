@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
             new ArrayList<ArrayList<Instruction.SEGMENT>>();
 
 
+
     public enum DATA_DEPENDENCY  {
             READ_AFTER_WRITE,
             WRITE_AFTER_WRITE,
@@ -504,9 +505,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void printToConsole(Instruction instruction) {
+    public void printToConsole() {
+        StringBuilder stringBuilder = new StringBuilder();
+        String result = "";
+        stringBuilder.append(result);
 
+        for(int i = 0; i < pipelineSequence.size(); i++){
+            for(int j = 0; j < pipelineSequence.get(i).size(); j++){
 
+                stringBuilder.append("|");
+                stringBuilder.append(pipelineSequence.get(i).get(j));
+                stringBuilder.append("|");
+            }
+
+            stringBuilder.append("\n");
+        }
+        Log.d(TAG, "PIPELINE_SEQUENCE: " + "\n" + stringBuilder.toString());
     }
 
     public void constructPipelineSequence(Instruction instruction, int stallsRequired) {
@@ -624,16 +638,16 @@ public class MainActivity extends AppCompatActivity {
         int instructionCounter = 1;
         Enumeration<Instruction> enumeration = instructionCache.getInstructions();
 
-        int size = instructionCache.getSize();
+        int instructionCacheSize = instructionCache.getSize();
 
-        Log.d(TAG, "SIZE! " + size);
+        Log.d(TAG, "SIZE! " + instructionCacheSize);
 
         constructPipelineSequence(instructionCache.getInstruction(instructionCounter), 0);
 
         while(enumeration.hasMoreElements()) {
             instructionCounter ++;
 
-            if(enumeration.nextElement().getInstructionNumber() > size) {
+            if(enumeration.nextElement().getInstructionNumber() > instructionCacheSize) {
                 break;
             }
 
@@ -645,6 +659,7 @@ public class MainActivity extends AppCompatActivity {
 
             constructPipelineSequence(instructionCache.getInstruction(instructionCounter), stalls);
         }
+        printToConsole();
     }
 
     @Override
