@@ -1,6 +1,5 @@
 package com.bhancock.pipelinedecoderapp;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -24,15 +23,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Enumeration;
-import java.util.Formatter;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
-import java.util.ListIterator;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,17 +38,19 @@ public class MainActivity extends AppCompatActivity {
     private boolean forwardingEnabled = false;
     private Uri uri = null;
 
-
     InstructionCache instructionCache;
     ArrayList<ArrayList<Instruction.SEGMENT>> pipelineSequence =
             new ArrayList<ArrayList<Instruction.SEGMENT>>();
 
+    Hashtable<Integer, DEPENDENCY> hazardTable = new Hashtable <>();
+    Hashtable<Integer, List<Instruction.SEGMENT>> cycleSegments = new Hashtable <>();
+    List<Instruction.SEGMENT> segmentListPerCycle = new ArrayList<>();
 
-
-    public enum DATA_DEPENDENCY  {
+    public enum DEPENDENCY {
             READ_AFTER_WRITE,
             WRITE_AFTER_WRITE,
             WRITE_AFTER_READ,
+            STRUCTURAL,
             NONE;
     }
 
@@ -101,8 +99,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-
-
 //                Instruction firstInstruction = new Instruction(1, "ADD", "R1", "R2", "R3");
 //                Instruction secondInstruction = new Instruction(2, "SUB", "R4", "R1", "R5");
 //                Instruction thirdInstruction = new Instruction(3, "LW", "T0", 0, "S2");
@@ -124,6 +120,8 @@ public class MainActivity extends AppCompatActivity {
 
                 //TODO: Temporary, reading from file should write to cache directly!
                 List<Instruction> instructionList = new ArrayList<>();
+
+
                 instructionList.add(0, firstInstruction);
                 instructionList.add(1, secondInstruction);
                 instructionList.add(2, thirdInstruction);
@@ -175,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private DATA_DEPENDENCY dataDependencyCheck(Instruction currentInstruction, Instruction previousInstruction) {
+    private DEPENDENCY dataDependencyCheck(Instruction currentInstruction, Instruction previousInstruction) {
 
         String currentInstructionDestinationRegister = null;
         String currentInstructionSourceReg1 = null;
@@ -249,31 +247,34 @@ public class MainActivity extends AppCompatActivity {
                     (currentInstruction.getOperand().equalsIgnoreCase("ADD")
                             || currentInstruction.getOperand().equalsIgnoreCase("SUB"))) {
 
-                return DATA_DEPENDENCY.NONE;
+                return DEPENDENCY.NONE;
             }
 
             if(currentInstructionSourceReg1.equalsIgnoreCase(previousInstructionDestinationRegister) ||
                     currentInstructionSourceReg2.equalsIgnoreCase(previousInstructionDestinationRegister)) {
 
-
                 //THIS IS THE TRUE DEPENDENCE > FOCUS ON THIS SPECIFIC CASE FIRST!
                 Log.d(TAG, "POSSIBLE READ AFTER WRITE (RAW) DATA DEPENDENCY!");
+                hazardTable.put(currentInstruction.getInstructionNumber(), DEPENDENCY.READ_AFTER_WRITE);
 
-                return DATA_DEPENDENCY.READ_AFTER_WRITE;
+                return DEPENDENCY.READ_AFTER_WRITE;
 
             } else if (currentInstructionDestinationRegister.equalsIgnoreCase(previousInstructionDestinationRegister)) {
 
                 Log.d(TAG, "POSSIBLE WRITE AFTER WRITE (WAW) DATA DEPENDENCY!");
-                return DATA_DEPENDENCY.WRITE_AFTER_WRITE;
+                hazardTable.put(currentInstruction.getInstructionNumber(), DEPENDENCY.WRITE_AFTER_WRITE);
+
+                return DEPENDENCY.WRITE_AFTER_WRITE;
 
             } else if (currentInstructionDestinationRegister.equalsIgnoreCase(previousInstructionSourceReg1) ||
                     currentInstructionDestinationRegister.equalsIgnoreCase(previousInstructionSourceReg2)) {
                 Log.d(TAG, "POSSIBLE WRITE AFTER READ (WAR) DATA DEPENDENCY!");
-                return DATA_DEPENDENCY.WRITE_AFTER_READ;
+                hazardTable.put(currentInstruction.getInstructionNumber(), DEPENDENCY.WRITE_AFTER_READ);
 
+                return DEPENDENCY.WRITE_AFTER_READ;
             }
             else {
-                return DATA_DEPENDENCY.NONE;
+                return DEPENDENCY.NONE;
             }
 
 
@@ -286,23 +287,23 @@ public class MainActivity extends AppCompatActivity {
         try {
             if(currentInstructionDestinationRegister.equalsIgnoreCase(previousInstructionDestinationRegister)) {
                 Log.d(TAG, "POSSIBLE WRITE AFTER WRITE (WAW) DATA DEPENDENCY!");
-                return DATA_DEPENDENCY.WRITE_AFTER_WRITE;
+                return DEPENDENCY.WRITE_AFTER_WRITE;
             }
         } catch (Exception e) {
             e.getMessage();
             e.printStackTrace();
         }
 
-        return DATA_DEPENDENCY.NONE;
+        return DEPENDENCY.NONE;
     }
 
 
     private int determineNumberOfStalls(Boolean forwarding, Instruction currentInstruction, Instruction previousInstruction) {
 
 
-        DATA_DEPENDENCY dataDependency = dataDependencyCheck(currentInstruction, previousInstruction);
+        DEPENDENCY dataDependency = dataDependencyCheck(currentInstruction, previousInstruction);
 
-        if(dataDependency != DATA_DEPENDENCY.NONE) {
+        if(dataDependency != DEPENDENCY.NONE) {
             //  1.)  When is the register available?
             Instruction.SEGMENT prevInstructionRegisterAvail = determineRegisterAvailability(forwarding, previousInstruction);
 
@@ -311,10 +312,6 @@ public class MainActivity extends AppCompatActivity {
             Instruction.SEGMENT currentInstructionRegisterNeeded = determineRegisterNeeded(forwarding, currentInstruction);
 
             //  3.) Out of sequence?
-            ListIterator<Instruction.SEGMENT> segmentListIterator = pipelineSequence.get(currentInstruction.getInstructionNumber() - 1).listIterator();
-            pipelineSequence.toArray();
-            Object[] test = pipelineSequence.get(1).toArray();
-
             // Subtract 1 because pipeline sequence is 0 based but unfortunately our instructions numbers are not
             int cycleRegisterNeeded = pipelineSequence.get(currentInstruction.getInstructionNumber() - 1).indexOf(currentInstructionRegisterNeeded);
             int cycleRegisterAvail = pipelineSequence.get(previousInstruction.getInstructionNumber() - 1).indexOf(prevInstructionRegisterAvail);
@@ -563,9 +560,14 @@ public class MainActivity extends AppCompatActivity {
             stringBuilder.append("\n");
         }
         Log.d(TAG, "PIPELINE_SEQUENCE: " + "\n" + stringBuilder.toString());
+
+        Log.d(TAG, "Hazards: " +"\n");
+        getStats();
+
     }
 
     public void constructPipelineSequence(Instruction instruction, int stallsRequired) {
+
 
         if (instruction.getInstructionNumber() == 1) {
             pipelineSequence.add((new ArrayList<Instruction.SEGMENT>(Arrays.asList(Instruction.SEGMENT.FETCH,
@@ -690,7 +692,6 @@ public class MainActivity extends AppCompatActivity {
         int instructionCounter = 1;
         Enumeration<Instruction> enumeration = instructionCache.getInstructions();
         int instructionCacheSize = instructionCache.getSize();
-        Log.d(TAG, "SIZE! " + instructionCacheSize);
 
         constructPipelineSequence(instructionCache.getInstruction(instructionCounter), 0);
 
@@ -703,11 +704,26 @@ public class MainActivity extends AppCompatActivity {
 
             constructPreStallDetectionPipelineSequence(instructionCache.getInstruction(instructionCounter));
 
-            int stalls = determineNumberOfStalls(forwardingEnabled,
+            int stallsFromLastInstruction = determineNumberOfStalls(forwardingEnabled,
                     instructionCache.getInstruction(instructionCounter),
                     instructionCache.getInstruction(instructionCounter - 1));
 
-            constructPipelineSequence(instructionCache.getInstruction(instructionCounter), 0);
+
+            int stallsFromPreviousInstructions = 0;
+//            try {
+//                if(instructionCounter > 3) {
+//                    //Check for addition reason to stall due to previous instructions
+//                    stallsFromPreviousInstructions =  determineNumberOfStalls(forwardingEnabled,
+//                            instructionCache.getInstruction(instructionCounter),
+//                            instructionCache.getInstruction(instructionCounter - 2));
+//                }
+//            } catch (IndexOutOfBoundsException e) {
+//                e.getMessage();
+//            }
+
+             int totalStalls = stallsFromLastInstruction + stallsFromPreviousInstructions;
+
+            constructPipelineSequence(instructionCache.getInstruction(instructionCounter), totalStalls);
         }
         printToConsole();
         resetProgram();
@@ -716,7 +732,15 @@ public class MainActivity extends AppCompatActivity {
     private void resetProgram() {
         instructionCache.resetCache();
         pipelineSequence.clear();
+        hazardTable.clear();
     };
+
+    private void getStats() {
+        Set<Integer> keys = hazardTable.keySet();
+        for(Integer key: keys) {
+            Log.d(TAG, "Hazard Detected at Instruction "+key+" is: "+hazardTable.get(key));
+        }
+    }
 
     @Override
     public void onLowMemory() {
